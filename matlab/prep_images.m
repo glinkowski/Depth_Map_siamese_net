@@ -3,6 +3,9 @@ clear all; close all; dbstop error;
 
 %% Image creation & modification flags
 
+% Run test on small set of images
+doUseDemoData = true;
+
 % Which sets of images to create (will need all)
 doCreateLeftImages = true;
 doCreateRightImages = true;
@@ -26,7 +29,11 @@ doShuffle = true;
 tstPerc = 10;
 
 % Target output directory
-outDir = '../train_prep/';
+if doUseDemoData
+    outDir = '../demo_prepped_images/';
+else
+    outDir = '../prepped_images/';
+end
 
 % The label to put into the manifest (text file)
 %   NOTE: the label value doesn't matter, will use a loss function
@@ -37,9 +44,15 @@ placeLabel = 0;
 % Start with the KITTI 2015 dataset
 disp('======= Formatting images from KITTI 2015 =======');
 
-lDir = '../KITTI_2015/training/image_2/';
-rDir = '../KITTI_2015/training/image_3/';
-gt10Dir = '../KITTI_2015/training/disp_occ_0/';
+if doUseDemoData
+    lDir = '../demo_KITTI_2015/training/image_2/';
+    rDir = '../demo_KITTI_2015/training/image_3/';
+    gt10Dir = '../demo_KITTI_2015/training/disp_occ_0/';
+else
+    lDir = '../KITTI_2015/training/image_2/';
+    rDir = '../KITTI_2015/training/image_3/';
+    gt10Dir = '../KITTI_2015/training/disp_occ_0/';
+end
 
 % Copy all (_10) Left images
 if doCreateLeftImages
@@ -185,14 +198,20 @@ disp('======= Formatting images from KITTI 2012 =======');
 
 startIdx = newIdx;
 
-if doUseGrayscale
-    lDir = '../KITTI_2012/training/image_0/';
-    rDir = '../KITTI_2012/training/image_1/';
+if doUseDemoData
+    dirPrefix = '../demo_KITTI_2012/training/';
 else
-    lDir = '../KITTI_2012/training/colored_0/';
-    rDir = '../KITTI_2012/training/colored_1/';
+    dirPrefix = '../KITTI_2012/training/';
+end
+
+if doUseGrayscale
+    lDir = strcat( dirPrefix, 'image_0/' );
+    rDir = strcat( dirPrefix, 'image_1/' );
+else
+    lDir = strcat( dirPrefix, 'colored_0/' );
+    rDir = strcat( dirPrefix, 'colored_1/' );
 end    
-gt10Dir = '../KITTI_2012/training/disp_occ/';
+gt10Dir = strcat( dirPrefix, 'disp_occ/' );
 
 % Copy all (_10) Left images
 if doCreateLeftImages
