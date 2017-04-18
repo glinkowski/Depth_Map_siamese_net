@@ -27,6 +27,8 @@ else
   RESIZE_WIDTH=0
 fi
 
+GRAYSCALE=true
+
 
 
 # Warn if any of the directories can't be found
@@ -72,6 +74,7 @@ GLOG_logtostderr=1 $TOOLS/convert_imageset \
     --resize_height=$RESIZE_HEIGHT \
     --resize_width=$RESIZE_WIDTH \
     --shuffle=false \
+    --gray=$GRAYSCALE \
     $SOURCE \
     $SOURCE/manifestTrainL.txt \
     $TARGET/depth_train_L_$BACKEND
@@ -82,6 +85,7 @@ GLOG_logtostderr=1 $TOOLS/convert_imageset \
     --resize_height=$RESIZE_HEIGHT \
     --resize_width=$RESIZE_WIDTH \
     --shuffle=false \
+    --gray=$GRAYSCALE \
     $SOURCE \
     $SOURCE/manifestTrainR.txt \
     $TARGET/depth_train_R_$BACKEND
@@ -92,6 +96,7 @@ GLOG_logtostderr=1 $TOOLS/convert_imageset \
     --resize_height=$RESIZE_HEIGHT \
     --resize_width=$RESIZE_WIDTH \
     --shuffle=false \
+    --gray=$GRAYSCALE \
     $SOURCE \
     $SOURCE/manifestTrainGT.txt \
     $TARGET/depth_train_GT_$BACKEND
@@ -106,6 +111,7 @@ GLOG_logtostderr=1 $TOOLS/convert_imageset \
     --resize_height=$RESIZE_HEIGHT \
     --resize_width=$RESIZE_WIDTH \
     --shuffle=false \
+    --gray=$GRAYSCALE \
     $SOURCE \
     $SOURCE/manifestTestL.txt \
     $TARGET/depth_test_L_$BACKEND
@@ -116,6 +122,7 @@ GLOG_logtostderr=1 $TOOLS/convert_imageset \
     --resize_height=$RESIZE_HEIGHT \
     --resize_width=$RESIZE_WIDTH \
     --shuffle=false \
+    --gray=$GRAYSCALE \
     $SOURCE \
     $SOURCE/manifestTestR.txt \
     $TARGET/depth_test_R_$BACKEND
@@ -126,6 +133,7 @@ GLOG_logtostderr=1 $TOOLS/convert_imageset \
     --resize_height=$RESIZE_HEIGHT \
     --resize_width=$RESIZE_WIDTH \
     --shuffle=false \
+    --gray=$GRAYSCALE \
     $SOURCE \
     $SOURCE/manifestTestGT.txt \
     $TARGET/depth_test_GT_$BACKEND
