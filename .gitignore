@@ -8,7 +8,7 @@
 KITTI_2012/*
 KITTI_2015/*
 lmdb_files/*
-train_prep/*
+prepped_images/*
 convert_imageset
 
 
