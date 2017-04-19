@@ -10,8 +10,10 @@ set -e
 #       shuffling is handled by pre-processing script.
 #NOTE: pre-processed images currently sized 370x675, near 16:9
 
+#TARGET=demo_lmdb_files
+#SOURCE=demo_prepped_images
 TARGET=lmdb_files
-SOURCE=train_prep
+SOURCE=prepped_images
 TOOLS=~/Caffe/build/tools
 
 BACKEND="lmdb"
@@ -69,6 +71,7 @@ rm -rf $TARGET/depth_test_GT_$BACKEND
 echo "\nCreating 3 train lmdb sets..."
 echo "    (one each: Left, Right, Ground Truth)\n"
 
+echo 
 GLOG_logtostderr=1 $TOOLS/convert_imageset \
     --backend=$BACKEND \
     --resize_height=$RESIZE_HEIGHT \
