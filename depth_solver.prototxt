@@ -1,28 +1,31 @@
 # The train/test net protocol buffer definition
 net: "./depth_train_test.prototxt"
 # test_iter specifies how many forward passes the test should carry out.
-# Train images: 1419, Test images: 157
+# Train images: 2128, Test images: 236
 
 # number of iterations to use over the train 
-test_iter: 71
-test_interval: 355
-max_iter: 3550
-snapshot: 1775
+test_iter: 100
+test_interval: 600
+max_iter: 4800
+snapshot: 1200
 snapshot_prefix: "snapshots/depth"
 
 base_lr: 0.01
 momentum: 0.9
 weight_decay: 0.0005
 
+display: 100
+
 lr_policy: "inv"
 gamma: 0.001
 power: 0.75
 
-display: 71
-
 solver_mode: GPU
 
 
+
+#### EXAMPLES ####
+#
 # # In the case of MNIST, we have test batch size 100 and 100 test iterations,
 # # covering the full 10,000 testing images.
 # test_iter: 100
