@@ -16,7 +16,7 @@ layer {
   }
   data_param {
     source: "lmdb_files/depth_train_L_lmdb"
-    batch_size: 4
+    batch_size: 8
     backend: LMDB
   }
 }
@@ -32,7 +32,7 @@ layer {
   }
   data_param {
     source: "lmdb_files/depth_train_R_lmdb"
-    batch_size: 4
+    batch_size: 8
     backend: LMDB
   }
 }
@@ -48,7 +48,7 @@ layer {
   }
   data_param {
     source: "lmdb_files/depth_train_GT_lmdb"
-    batch_size: 4
+    batch_size: 8
     backend: LMDB
   }
 }
@@ -69,7 +69,7 @@ layer {
   }
   data_param {
     source: "lmdb_files/depth_test_L_lmdb"
-    batch_size: 4
+    batch_size: 8
     backend: LMDB
   }
 }
@@ -85,7 +85,7 @@ layer {
   }
   data_param {
     source: "lmdb_files/depth_test_R_lmdb"
-    batch_size: 4
+    batch_size: 8
     backend: LMDB
   }
 }
@@ -101,7 +101,7 @@ layer {
   }
   data_param {
     source: "lmdb_files/depth_test_GT_lmdb"
-    batch_size: 4
+    batch_size: 8
     backend: LMDB
   }
 }
@@ -144,7 +144,7 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 7
+    num_output: 10
     kernel_size: 11
     pad: 5
     stride: 1
@@ -187,7 +187,7 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 25
+    num_output: 30
     kernel_size: 5
     pad: 2
     stride: 1
@@ -216,6 +216,49 @@ layer {
     stride: 2
   }
 }
+#layer {
+#  name: "conv3_L"
+#  type: "Convolution"
+#  bottom: "pool2_L"
+#  top: "conv3_L"
+#  param {
+#    name: "conv3_w"
+#    lr_mult: 1
+#  }
+#  param {
+#    name: "conv3_b"
+#    lr_mult: 2
+#  }
+#  convolution_param {
+#    num_output: 30
+#    kernel_size: 5
+#    pad: 2
+#    stride: 1
+#    weight_filler {
+#      type: "xavier"
+#    }
+#    bias_filler {
+#      type: "constant"
+#    }
+#  }
+#}
+#layer {
+#  name: "relu3_L"
+#  type: "ReLU"
+#  bottom: "conv3_L"
+#  top: "conv3_L"
+#}
+#layer {
+#  name: "pool3_L"
+#  type: "Pooling"
+#  bottom: "conv3_L"
+#  top: "pool3_L"
+#  pooling_param {
+#    pool: MAX
+#    kernel_size: 1
+#    stride: 1
+#  }
+#}
 
 
 ######################################
@@ -235,7 +278,7 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 7
+    num_output: 10
     kernel_size: 11
     pad: 5
     stride: 1
@@ -278,7 +321,7 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 25
+    num_output: 30
     kernel_size: 5
     pad: 2
     stride: 1
@@ -307,6 +350,49 @@ layer {
     stride: 2
   }
 }
+#layer {
+#  name: "conv3_R"
+#  type: "Convolution"
+#  bottom: "pool2_R"
+#  top: "conv3_R"
+#  param {
+#    name: "conv3_w"
+#    lr_mult: 1
+#  }
+#  param {
+#    name: "conv3_b"
+#    lr_mult: 2
+#  }
+#  convolution_param {
+#    num_output: 25
+#    kernel_size: 5
+#    pad: 2
+#    stride: 1
+#    weight_filler {
+#      type: "xavier"
+#    }
+#    bias_filler {
+#      type: "constant"
+#    }
+#  }
+#}
+#layer {
+#  name: "relu3_R"
+#  type: "ReLU"
+#  bottom: "conv3_R"
+#  top: "conv3_R"
+#}
+#layer {
+#  name: "pool3_R"
+#  type: "Pooling"
+#  bottom: "conv3_R"
+#  top: "pool3_R"
+#  pooling_param {
+#    pool: MAX
+#    kernel_size: 1
+#    stride: 1
+#  }
+#}
 
 
 ######################################
