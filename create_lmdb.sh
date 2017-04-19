@@ -22,8 +22,10 @@ BACKEND="lmdb"
 # already been resized using another tool.
 RESIZE=true
 if $RESIZE; then
-  RESIZE_HEIGHT=256
-  RESIZE_WIDTH=512
+#  RESIZE_HEIGHT=256
+#  RESIZE_WIDTH=512
+  RESIZE_HEIGHT=128
+  RESIZE_WIDTH=256
 else
   RESIZE_HEIGHT=0
   RESIZE_WIDTH=0
