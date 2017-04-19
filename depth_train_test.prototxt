@@ -1,0 +1,420 @@
+name: "depth_map_train_test"
+
+
+######################################
+#### LOAD DATA: 3 training images ####
+######################################
+layer {
+  name: "LTrain_data"
+  type: "Data"
+  top: "L_data"
+  top: "L_junk_label"
+  include {
+    phase: TRAIN
+  }
+  transform_param {
+  }
+  data_param {
+    source: "lmdb_files/depth_train_L_lmdb"
+    batch_size: 4
+    backend: LMDB
+  }
+}
+layer {
+  name: "RTrain_data"
+  type: "Data"
+  top: "R_data"
+  top: "R_junk_label"
+  include {
+    phase: TRAIN
+  }
+  transform_param {
+  }
+  data_param {
+    source: "lmdb_files/depth_train_R_lmdb"
+    batch_size: 4
+    backend: LMDB
+  }
+}
+layer {
+  name: "GTTrain_data"
+  type: "Data"
+  top: "GT_data"
+  top: "GT_junk_label"
+  include {
+    phase: TRAIN
+  }
+  transform_param {
+  }
+  data_param {
+    source: "lmdb_files/depth_train_GT_lmdb"
+    batch_size: 4
+    backend: LMDB
+  }
+}
+
+######################################
+#### LOAD DATA: 3 testing images  ####
+######################################
+layer {
+  name: "LTest_data"
+  type: "Data"
+  top: "L_data"
+  top: "L_junk_label"
+  include {
+    phase: TEST
+  }
+  transform_param {
+  }
+  data_param {
+    source: "lmdb_files/depth_test_L_lmdb"
+    batch_size: 4
+    backend: LMDB
+  }
+}
+layer {
+  name: "RTest_data"
+  type: "Data"
+  top: "R_data"
+  top: "R_junk_label"
+  include {
+    phase: TEST
+  }
+  transform_param {
+  }
+  data_param {
+    source: "lmdb_files/depth_test_R_lmdb"
+    batch_size: 4
+    backend: LMDB
+  }
+}
+layer {
+  name: "GTTest_data"
+  type: "Data"
+  top: "GT_data"
+  top: "GT_junk_label"
+  include {
+    phase: TEST
+  }
+  transform_param {
+  }
+  data_param {
+    source: "lmdb_files/depth_test_GT_lmdb"
+    batch_size: 4
+    backend: LMDB
+  }
+}
+
+######################################
+#### SILENCE OUTPUT: fake labels  ####
+######################################
+layer {
+  name: "stfu_L"
+  type: "Silence"
+  bottom: "L_junk_label"
+}
+layer {
+  name: "stfu_R"
+  type: "Silence"
+  bottom: "R_junk_label"
+}
+layer {
+  name: "stfu_GT"
+  type: "Silence"
+  bottom: "GT_junk_label"
+}
+
+######################################
+#### PROCESS: left leg            ####
+######################################
+layer {
+  name: "conv1_L"
+  type: "Convolution"
+  bottom: "L_data"
+  top: "conv1_L"
+  param {
+    name: "conv1_w"
+    lr_mult: 1
+  }
+  param {
+    name: "conv1_b"
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 6
+    kernel_size: 11
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "relu1_L"
+  type: "ReLU"
+  bottom: "conv1_L"
+  top: "conv1_L"
+}
+layer {
+  name: "pool1_L"
+  type: "Pooling"
+  bottom: "conv1_L"
+  top: "pool1_L"
+  pooling_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+  }
+}
+layer {
+  name: "conv2_L"
+  type: "Convolution"
+  bottom: "pool1_L"
+  top: "conv2_L"
+  param {
+    name: "conv2_w"
+    lr_mult: 1
+  }
+  param {
+    name: "conv2_b"
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 25
+    kernel_size: 5
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "relu2_L"
+  type: "ReLU"
+  bottom: "conv2_L"
+  top: "conv2_L"
+}
+layer {
+  name: "pool2_L"
+  type: "Pooling"
+  bottom: "conv2_L"
+  top: "pool2_L"
+  pooling_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+  }
+}
+#layer {
+#  name: "ip1_L"
+#  type: "InnerProduct"
+#  bottom: "pool1_L"
+#  top: "ip1_L"
+#  param {
+#    name: "ip1_w"
+#    lr_mult: 1
+#  }
+#  param {
+#    name: "ip1_b"
+#    lr_mult: 2
+#  }
+#  inner_product_param {
+#    num_output: 1000
+#    weight_filler {
+#      type: "xavier"
+#    }
+#    bias_filler {
+#      type: "constant"
+#    }
+#  }
+#}
+
+
+######################################
+#### PROCESS: right leg           ####
+######################################
+layer {
+  name: "conv1_R"
+  type: "Convolution"
+  bottom : "R_data"
+  top: "conv1_R"
+  param {
+    name: "conv1_w"
+    lr_mult: 1
+  }
+  param {
+    name: "conv1_b"
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 6
+    kernel_size: 11
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "relu1_R"
+  type: "ReLU"
+  bottom: "conv1_R"
+  top: "conv1_R"
+}
+layer {
+  name: "pool1_R"
+  type: "Pooling"
+  bottom: "conv1_R"
+  top: "pool1_R"
+  pooling_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+  }
+}
+layer {
+  name: "conv2_R"
+  type: "Convolution"
+  bottom: "pool1_R"
+  top: "conv2_R"
+  param {
+    name: "conv2_w"
+    lr_mult: 1
+  }
+  param {
+    name: "conv2_b"
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 25
+    kernel_size: 5
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "relu2_R"
+  type: "ReLU"
+  bottom: "conv2_R"
+  top: "conv2_R"
+}
+layer {
+  name: "pool2_R"
+  type: "Pooling"
+  bottom: "conv2_R"
+  top: "pool2_R"
+  pooling_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+  }
+}
+
+
+######################################
+#### PROCESS: join R & L          ####
+######################################
+layer {
+  name: "join_concatenate"
+  type: "Concat"
+  bottom: "pool2_L"
+  bottom: "pool2_R"
+  top: "joint_conc"
+  concat_param {
+    axis: 1
+  }
+}
+layer {
+  name: "join_InnerProduct"
+  type: "InnerProduct"
+  bottom: "joint_conc"
+  top: "joint_fc"
+  inner_product_param {
+#    num_output: 1536
+    num_output: 1536
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+
+
+######################################
+#### PROCESS: ground truth        ####
+######################################
+layer {
+  name: "pool1_GT"
+  type: "Pooling"
+  bottom: "GT_data"
+  top: "pool1_GT"
+  pooling_param {
+    pool: MAX
+    kernel_size: 8
+    stride: 8
+  }
+}
+#layer {
+#  name: "ip1_GT"
+#  type: "InnerProduct"
+#  bottom: "pool1_GT"
+#  top: "ip1_GT"
+#  inner_product_param {
+#    num_output: 1000
+#    weight_filler {
+#      type: "xavier"
+#    }
+#    bias_filler {
+#      type: "constant"
+#    }
+#  }
+#}
+
+
+#layer {
+#  name: "loss"
+#  type: "EuclideanLoss"
+#  bottom: "joint_img"
+#  bottom: "ip1_GT"
+#  top: "loss"
+#}
+#
+#layer {
+#  name: "accuracy"
+#  type: "Accuracy"
+#  bottom: "ip1_GT"
+#  bottom: "joint_img"
+#  top: "accuracy"
+#  include {
+#    phase: TEST
+#  }
+#}
+
+
+######################################
+#### PROCESS: calculate loss      ####
+######################################
+layer {
+  name: "loss"
+  type: "EuclideanLoss"
+  bottom: "joint_fc"
+  bottom: "pool1_GT"
+  top: "loss"
+}
