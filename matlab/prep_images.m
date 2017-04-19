@@ -1,7 +1,7 @@
 disp('======= Prepare train & test data from KITTI datasets =======');
 clear all; close all; dbstop error;
 
-%% Image creation & modification flags
+%% Image creation & modification flags & parameters
 
 % Run test on small set of images
 doUseDemoData = true;
@@ -24,6 +24,12 @@ doUseGrayscale = true;
 
 % Shuffle the order of the images in the manifest files
 doShuffle = true;
+
+% Size to which to crop images (in pixels)
+cropH = 370;
+cropW = 2 * cropH;
+cropL = floor(cropW / 2);
+cropR = cropL + cropW - 1;
 
 % Percent of total images to set aside for testing/validation
 tstPerc = 10;
@@ -77,20 +83,33 @@ if doCreateLeftImages
             end
         end
 
+        %{
         % Split in half, ratio 5:3
         IL = I((Isize(1)-369):Isize(1), 1:675, :);
         IR = I((Isize(1)-369):Isize(1), (Isize(2)-674):Isize(2), :);
         imwrite(IL, strcat(outDir, num2str(newIdx, '%05d'), 'L.png'));
         imwrite(IR, strcat(outDir, num2str(newIdx+1, '%05d'), 'L.png'));
         newIdx = newIdx + 2;
+        %}
+        
+        % Crop into 3 images
+        IL = I( (Isize(1)-cropH+1):Isize(1), 1:cropW, :);
+        IC = I( (Isize(1)-cropH+1):Isize(1), cropL:cropR, :);
+        IR = I( (Isize(1)-cropH+1):Isize(1), (Isize(2)-cropW+1):Isize(2), :);
+        imwrite(IL, strcat(outDir, num2str(newIdx, '%05d'), 'L.png'));
+        imwrite(IC, strcat(outDir, num2str(newIdx+1, '%05d'), 'L.png'));
+        imwrite(IR, strcat(outDir, num2str(newIdx+2, '%05d'), 'L.png'));
+        newIdx = newIdx + 3;
 
         % Flip training files
         if doFlipImages
             ILflip = fliplr(IR);
+            ICflip = fliplr(IC);
             IRflip = fliplr(IL);
             imwrite(IRflip, strcat(outDir, num2str(newIdx, '%05d'), 'R.png'));
-            imwrite(ILflip, strcat(outDir, num2str(newIdx+1, '%05d'), 'R.png'));
-            newIdx = newIdx + 2;
+            imwrite(ICflip, strcat(outDir, num2str(newIdx+1, '%05d'), 'R.png'));
+            imwrite(ILflip, strcat(outDir, num2str(newIdx+2, '%05d'), 'R.png'));
+            newIdx = newIdx + 3;
         end
 
     end %for files
@@ -119,20 +138,35 @@ if doCreateRightImages
             end
         end
 
+        %{
         % Split in half, ratio 5:3
         IL = I((Isize(1)-369):Isize(1), 1:675, :);
         IR = I((Isize(1)-369):Isize(1), (Isize(2)-674):Isize(2), :);
         imwrite(IL, strcat(outDir, num2str(newIdx, '%05d'), 'R.png'));
         imwrite(IR, strcat(outDir, num2str(newIdx+1, '%05d'), 'R.png'));
         newIdx = newIdx + 2;
+        %}
 
+        
+        % Crop into 3 images
+        IL = I( (Isize(1)-cropH+1):Isize(1), 1:cropW, :);
+        IC = I( (Isize(1)-cropH+1):Isize(1), cropL:cropR, :);
+        IR = I( (Isize(1)-cropH+1):Isize(1), (Isize(2)-cropW+1):Isize(2), :);
+        imwrite(IL, strcat(outDir, num2str(newIdx, '%05d'), 'R.png'));
+        imwrite(IC, strcat(outDir, num2str(newIdx+1, '%05d'), 'R.png'));
+        imwrite(IR, strcat(outDir, num2str(newIdx+2, '%05d'), 'R.png'));
+        newIdx = newIdx + 3;
+        
+        
         % Flip training files
         if doFlipImages
             ILflip = fliplr(IR);
+            ICflip = fliplr(IC);
             IRflip = fliplr(IL);
             imwrite(IRflip, strcat(outDir, num2str(newIdx, '%05d'), 'L.png'));
-            imwrite(ILflip, strcat(outDir, num2str(newIdx+1, '%05d'), 'L.png'));
-            newIdx = newIdx + 2;
+            imwrite(ICflip, strcat(outDir, num2str(newIdx+1, '%05d'), 'L.png'));
+            imwrite(ILflip, strcat(outDir, num2str(newIdx+2, '%05d'), 'L.png'));
+            newIdx = newIdx + 3;
         end
 
     end %for files
@@ -156,20 +190,33 @@ if doCreateGroundTruthImages
             I = imdilate(I, dilator);
         end
 
+        %{
         % Split in half, ratio 5:3
         IL = I((Isize(1)-369):Isize(1), 1:675, :);
         IR = I((Isize(1)-369):Isize(1), (Isize(2)-674):Isize(2), :);
         imwrite(IL, strcat(outDir, num2str(newIdx, '%05d'), 'GT.png'));
         imwrite(IR, strcat(outDir, num2str(newIdx+1, '%05d'), 'GT.png'));
         newIdx = newIdx + 2;
+        %}
+        
+        % Crop into 3 images
+        IL = I( (Isize(1)-cropH+1):Isize(1), 1:cropW, :);
+        IC = I( (Isize(1)-cropH+1):Isize(1), cropL:cropR, :);
+        IR = I( (Isize(1)-cropH+1):Isize(1), (Isize(2)-cropW+1):Isize(2), :);
+        imwrite(IL, strcat(outDir, num2str(newIdx, '%05d'), 'GT.png'));
+        imwrite(IC, strcat(outDir, num2str(newIdx+1, '%05d'), 'GT.png'));
+        imwrite(IR, strcat(outDir, num2str(newIdx+2, '%05d'), 'GT.png'));
+        newIdx = newIdx + 3;
 
         % Flip training files
         if doFlipImages
             ILflip = fliplr(IR);
+            ICflip = fliplr(IC);
             IRflip = fliplr(IL);
             imwrite(IRflip, strcat(outDir, num2str(newIdx, '%05d'), 'GT.png'));
-            imwrite(ILflip, strcat(outDir, num2str(newIdx+1, '%05d'), 'GT.png'));
-            newIdx = newIdx + 2;
+            imwrite(ICflip, strcat(outDir, num2str(newIdx+1, '%05d'), 'GT.png'));
+            imwrite(ILflip, strcat(outDir, num2str(newIdx+2, '%05d'), 'GT.png'));
+            newIdx = newIdx + 3;
         end
 
     end %for files
@@ -227,12 +274,16 @@ if doCreateLeftImages
         if doUseGrayscale
             Isize = size(I);
             if (length(Isize) == 3)
+                I = rgb2gray(I);
+                %{
                 if (Isize(3) == 3);
                     I = rgb2gray(I);
                 end
+                %}
             end
         end
 
+        %{
         % Split in half, ratio 5:3
         IL = I(:, 1:675, :);
         IR = I(:, 552:1226, :);
@@ -247,6 +298,27 @@ if doCreateLeftImages
             imwrite(IRflip, strcat(outDir, num2str(newIdx, '%05d'), 'R.png'));
             imwrite(ILflip, strcat(outDir, num2str(newIdx+1, '%05d'), 'R.png'));
             newIdx = newIdx + 2;
+        end
+        %}
+        
+        % Crop into 3 images
+        IL = I( (Isize(1)-cropH+1):Isize(1), 1:cropW, :);
+        IC = I( (Isize(1)-cropH+1):Isize(1), cropL:cropR, :);
+        IR = I( (Isize(1)-cropH+1):Isize(1), (Isize(2)-cropW+1):Isize(2), :);
+        imwrite(IL, strcat(outDir, num2str(newIdx, '%05d'), 'L.png'));
+        imwrite(IC, strcat(outDir, num2str(newIdx+1, '%05d'), 'L.png'));
+        imwrite(IR, strcat(outDir, num2str(newIdx+2, '%05d'), 'L.png'));
+        newIdx = newIdx + 3;
+
+        % Flip training files
+        if doFlipImages
+            ILflip = fliplr(IR);
+            ICflip = fliplr(IC);
+            IRflip = fliplr(IL);
+            imwrite(IRflip, strcat(outDir, num2str(newIdx, '%05d'), 'R.png'));
+            imwrite(ICflip, strcat(outDir, num2str(newIdx+1, '%05d'), 'R.png'));
+            imwrite(ILflip, strcat(outDir, num2str(newIdx+2, '%05d'), 'R.png'));
+            newIdx = newIdx + 3;
         end
 
     end %for files
@@ -266,12 +338,16 @@ if doCreateRightImages
         if doUseGrayscale
             Isize = size(I);
             if (length(Isize) == 3)
+                I = rgb2gray(I);
+                %{
                 if (Isize(3) == 3);
                     I = rgb2gray(I);
                 end
+                %}
             end
         end
 
+        %{
         % Split in half, ratio 5:3
         IL = I(:, 1:675, :);
         IR = I(:, 552:1226, :);
@@ -286,6 +362,29 @@ if doCreateRightImages
             imwrite(IRflip, strcat(outDir, num2str(newIdx, '%05d'), 'L.png'));
             imwrite(ILflip, strcat(outDir, num2str(newIdx+1, '%05d'), 'L.png'));
             newIdx = newIdx + 2;
+        end
+        %}
+
+        
+        % Crop into 3 images
+        IL = I( (Isize(1)-cropH+1):Isize(1), 1:cropW, :);
+        IC = I( (Isize(1)-cropH+1):Isize(1), cropL:cropR, :);
+        IR = I( (Isize(1)-cropH+1):Isize(1), (Isize(2)-cropW+1):Isize(2), :);
+        imwrite(IL, strcat(outDir, num2str(newIdx, '%05d'), 'R.png'));
+        imwrite(IC, strcat(outDir, num2str(newIdx+1, '%05d'), 'R.png'));
+        imwrite(IR, strcat(outDir, num2str(newIdx+2, '%05d'), 'R.png'));
+        newIdx = newIdx + 3;
+        
+        
+        % Flip training files
+        if doFlipImages
+            ILflip = fliplr(IR);
+            ICflip = fliplr(IC);
+            IRflip = fliplr(IL);
+            imwrite(IRflip, strcat(outDir, num2str(newIdx, '%05d'), 'L.png'));
+            imwrite(ICflip, strcat(outDir, num2str(newIdx+1, '%05d'), 'L.png'));
+            imwrite(ILflip, strcat(outDir, num2str(newIdx+2, '%05d'), 'L.png'));
+            newIdx = newIdx + 3;
         end
 
     end %for files
@@ -305,6 +404,7 @@ if doCreateGroundTruthImages
             I = imdilate(I, dilator);
         end
 
+        %{
         % Split in half, ratio 5:3
         IL = I(:, 1:675, :);
         IR = I(:, 552:1226, :);
@@ -319,6 +419,27 @@ if doCreateGroundTruthImages
             imwrite(IRflip, strcat(outDir, num2str(newIdx, '%05d'), 'GT.png'));
             imwrite(ILflip, strcat(outDir, num2str(newIdx+1, '%05d'), 'GT.png'));
             newIdx = newIdx + 2;
+        end
+        %}
+        
+        % Crop into 3 images
+        IL = I( (Isize(1)-cropH+1):Isize(1), 1:cropW, :);
+        IC = I( (Isize(1)-cropH+1):Isize(1), cropL:cropR, :);
+        IR = I( (Isize(1)-cropH+1):Isize(1), (Isize(2)-cropW+1):Isize(2), :);
+        imwrite(IL, strcat(outDir, num2str(newIdx, '%05d'), 'GT.png'));
+        imwrite(IC, strcat(outDir, num2str(newIdx+1, '%05d'), 'GT.png'));
+        imwrite(IR, strcat(outDir, num2str(newIdx+2, '%05d'), 'GT.png'));
+        newIdx = newIdx + 3;
+
+        % Flip training files
+        if doFlipImages
+            ILflip = fliplr(IR);
+            ICflip = fliplr(IC);
+            IRflip = fliplr(IL);
+            imwrite(IRflip, strcat(outDir, num2str(newIdx, '%05d'), 'GT.png'));
+            imwrite(ICflip, strcat(outDir, num2str(newIdx+1, '%05d'), 'GT.png'));
+            imwrite(ILflip, strcat(outDir, num2str(newIdx+2, '%05d'), 'GT.png'));
+            newIdx = newIdx + 3;
         end
 
     end %for files
