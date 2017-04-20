@@ -162,33 +162,33 @@ layer {
   bottom: "conv1_L"
   top: "conv1_L"
 }
-#layer {
-#  name: "norm1_L"
-#  type: "LRN"
-#  bottom: "conv1_L"
-#  top: "norm1_L"
-#  lrn_param {
-#    local_size: 5
-#    alpha: 0.25
-#    beta: 0.75
-#    norm_region: WITHIN_CHANNEL
-#  }
-#}
 layer {
-  name: "bn1_L"
-  type: "BatchNorm"
+  name: "norm1_L"
+  type: "LRN"
   bottom: "conv1_L"
   top: "conv1_L"
-  param {
-    lr_mult: 0
-  }
-  param {
-    lr_mult: 0
-  }
-  param {
-    lr_mult: 0
+  lrn_param {
+    local_size: 5
+    alpha: 0.25
+    beta: 0.75
+    norm_region: WITHIN_CHANNEL
   }
 }
+#layer {
+#  name: "bn1_L"
+#  type: "BatchNorm"
+#  bottom: "conv1_L"
+#  top: "conv1_L"
+#  param {
+#    lr_mult: 0
+#  }
+#  param {
+#    lr_mult: 0
+#  }
+#  param {
+#    lr_mult: 0
+#  }
+#}
 layer {
   name: "pool1_L"
   type: "Pooling"
@@ -355,33 +355,33 @@ layer {
   bottom: "conv1_R"
   top: "conv1_R"
 }
-#layer {
-#  name: "norm1_R"
-#  type: "LRN"
-#  bottom: "conv1_R"
-#  top: "norm1_R"
-#  lrn_param {
-#    local_size: 5
-#    alpha: 0.25
-#    beta: 0.75
-#    norm_region: WITHIN_CHANNEL
-#  }
-#}
 layer {
-  name: "bn1_R"
-  type: "BatchNorm"
+  name: "norm1_R"
+  type: "LRN"
   bottom: "conv1_R"
   top: "conv1_R"
-  param {
-    lr_mult: 0
-  }
-  param {
-    lr_mult: 0
-  }
-  param {
-    lr_mult: 0
+  lrn_param {
+    local_size: 5
+    alpha: 0.25
+    beta: 0.75
+    norm_region: WITHIN_CHANNEL
   }
 }
+#layer {
+#  name: "bn1_R"
+#  type: "BatchNorm"
+#  bottom: "conv1_R"
+#  top: "conv1_R"
+#  param {
+#    lr_mult: 0
+#  }
+#  param {
+#    lr_mult: 0
+#  }
+#  param {
+#    lr_mult: 0
+#  }
+#}
 layer {
   name: "pool1_R"
   type: "Pooling"
