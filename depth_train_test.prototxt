@@ -144,7 +144,7 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 10
+    num_output: 4
     kernel_size: 11
     pad: 5
     stride: 1
@@ -163,9 +163,21 @@ layer {
   top: "conv1_L"
 }
 layer {
+  name: "norm1_L"
+  type: "LRN"
+  bottom: "conv1_L"
+  top: "norm1_L"
+  lrn_param {
+    local_size: 3
+    alpha: 5e-05
+    beta: 0.75
+    norm_region: WITHIN_CHANNEL
+  }
+}
+layer {
   name: "pool1_L"
   type: "Pooling"
-  bottom: "conv1_L"
+  bottom: "norm1_L"
   top: "pool1_L"
   pooling_param {
     pool: MAX
@@ -187,7 +199,7 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 30
+    num_output: 16
     kernel_size: 5
     pad: 2
     stride: 1
@@ -206,10 +218,42 @@ layer {
   top: "conv2_L"
 }
 layer {
-  name: "pool2_L"
-  type: "Pooling"
+  name: "conv3_L"
+  type: "Convolution"
   bottom: "conv2_L"
-  top: "pool2_L"
+  top: "conv3_L"
+  param {
+    name: "conv3_w"
+    lr_mult: 1
+  }
+  param {
+    name: "conv3_b"
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 16
+    kernel_size: 5
+    pad: 2
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "relu3_L"
+  type: "ReLU"
+  bottom: "conv3_L"
+  top: "conv3_L"
+}
+layer {
+  name: "pool3_L"
+  type: "Pooling"
+  bottom: "conv3_L"
+  top: "pool3_L"
   pooling_param {
     pool: MAX
     kernel_size: 2
@@ -278,7 +322,7 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 10
+    num_output: 4
     kernel_size: 11
     pad: 5
     stride: 1
@@ -297,9 +341,21 @@ layer {
   top: "conv1_R"
 }
 layer {
+  name: "norm1_R"
+  type: "LRN"
+  bottom: "conv1_R"
+  top: "norm1_R"
+  lrn_param {
+    local_size: 3
+    alpha: 5e-05
+    beta: 0.75
+    norm_region: WITHIN_CHANNEL
+  }
+}
+layer {
   name: "pool1_R"
   type: "Pooling"
-  bottom: "conv1_R"
+  bottom: "norm1_R"
   top: "pool1_R"
   pooling_param {
     pool: MAX
@@ -321,7 +377,7 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 30
+    num_output: 16
     kernel_size: 5
     pad: 2
     stride: 1
@@ -340,10 +396,42 @@ layer {
   top: "conv2_R"
 }
 layer {
-  name: "pool2_R"
-  type: "Pooling"
+  name: "conv3_R"
+  type: "Convolution"
   bottom: "conv2_R"
-  top: "pool2_R"
+  top: "conv3_R"
+  param {
+    name: "conv3_w"
+    lr_mult: 1
+  }
+  param {
+    name: "conv3_b"
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 16
+    kernel_size: 5
+    pad: 2
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "relu3_R"
+  type: "ReLU"
+  bottom: "conv3_R"
+  top: "conv3_R"
+}
+layer {
+  name: "pool3_R"
+  type: "Pooling"
+  bottom: "conv3_R"
+  top: "pool3_R"
   pooling_param {
     pool: MAX
     kernel_size: 2
@@ -401,8 +489,8 @@ layer {
 layer {
   name: "join_concatenate"
   type: "Concat"
-  bottom: "pool2_L"
-  bottom: "pool2_R"
+  bottom: "pool3_L"
+  bottom: "pool3_R"
   top: "joint_conc"
   concat_param {
     axis: 1
