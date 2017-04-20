@@ -144,7 +144,7 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 4
+    num_output: 8
     kernel_size: 11
     pad: 5
     stride: 1
@@ -162,22 +162,37 @@ layer {
   bottom: "conv1_L"
   top: "conv1_L"
 }
+#layer {
+#  name: "norm1_L"
+#  type: "LRN"
+#  bottom: "conv1_L"
+#  top: "norm1_L"
+#  lrn_param {
+#    local_size: 5
+#    alpha: 0.25
+#    beta: 0.75
+#    norm_region: WITHIN_CHANNEL
+#  }
+#}
 layer {
-  name: "norm1_L"
-  type: "LRN"
+  name: "bn1_L"
+  type: "BatchNorm"
   bottom: "conv1_L"
-  top: "norm1_L"
-  lrn_param {
-    local_size: 3
-    alpha: 5e-05
-    beta: 0.75
-    norm_region: WITHIN_CHANNEL
+  top: "conv1_L"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
   }
 }
 layer {
   name: "pool1_L"
   type: "Pooling"
-  bottom: "norm1_L"
+  bottom: "conv1_L"
   top: "pool1_L"
   pooling_param {
     pool: MAX
@@ -231,7 +246,7 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 16
+    num_output: 32
     kernel_size: 5
     pad: 2
     stride: 1
@@ -322,7 +337,7 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 4
+    num_output: 8
     kernel_size: 11
     pad: 5
     stride: 1
@@ -340,22 +355,37 @@ layer {
   bottom: "conv1_R"
   top: "conv1_R"
 }
+#layer {
+#  name: "norm1_R"
+#  type: "LRN"
+#  bottom: "conv1_R"
+#  top: "norm1_R"
+#  lrn_param {
+#    local_size: 5
+#    alpha: 0.25
+#    beta: 0.75
+#    norm_region: WITHIN_CHANNEL
+#  }
+#}
 layer {
-  name: "norm1_R"
-  type: "LRN"
+  name: "bn1_R"
+  type: "BatchNorm"
   bottom: "conv1_R"
-  top: "norm1_R"
-  lrn_param {
-    local_size: 3
-    alpha: 5e-05
-    beta: 0.75
-    norm_region: WITHIN_CHANNEL
+  top: "conv1_R"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
   }
 }
 layer {
   name: "pool1_R"
   type: "Pooling"
-  bottom: "norm1_R"
+  bottom: "conv1_R"
   top: "pool1_R"
   pooling_param {
     pool: MAX
@@ -409,7 +439,7 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 16
+    num_output: 32
     kernel_size: 5
     pad: 2
     stride: 1
