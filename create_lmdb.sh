@@ -73,7 +73,7 @@ rm -rf $TARGET/depth_test_GT_$BACKEND
 echo "\nCreating 3 train lmdb sets..."
 echo "    (one each: Left, Right, Ground Truth)\n"
 
-echo 
+echo ""
 GLOG_logtostderr=1 $TOOLS/convert_imageset \
     --backend=$BACKEND \
     --resize_height=$RESIZE_HEIGHT \
@@ -111,6 +111,7 @@ GLOG_logtostderr=1 $TOOLS/convert_imageset \
 echo "\nCreating 3 validation lmdb sets..."
 echo "    (one each: Left, Right, Ground Truth)\n"
 
+echo ""
 GLOG_logtostderr=1 $TOOLS/convert_imageset \
     --backend=$BACKEND \
     --resize_height=$RESIZE_HEIGHT \
