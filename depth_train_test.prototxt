@@ -233,6 +233,18 @@ layer {
   top: "conv2_L"
 }
 layer {
+  name: "norm2_L"
+  type: "LRN"
+  bottom: "conv2_L"
+  top: "conv2_L"
+  lrn_param {
+    local_size: 5
+    alpha: 0.25
+    beta: 0.75
+    norm_region: WITHIN_CHANNEL
+  }
+}
+layer {
   name: "conv3_L"
   type: "Convolution"
   bottom: "conv2_L"
@@ -424,6 +436,18 @@ layer {
   type: "ReLU"
   bottom: "conv2_R"
   top: "conv2_R"
+}
+layer {
+  name: "norm2_R"
+  type: "LRN"
+  bottom: "conv2_R"
+  top: "conv2_R"
+  lrn_param {
+    local_size: 5
+    alpha: 0.25
+    beta: 0.75
+    norm_region: WITHIN_CHANNEL
+  }
 }
 layer {
   name: "conv3_R"
