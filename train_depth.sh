@@ -22,9 +22,9 @@ if [ $# -gt 0]; then
 else
 #	GLOG_logtostderr=1 \
 #		$TOOLS/caffe train --solver=./depth_solver.prototxt \
-#		|%26 tee train_depth_2.log $@
+#		|%26 tee -i train_depth_2.log $@
 	echo ""
 	echo "Copy and run the following: "
-	echo "$TOOLS/caffe train --solver=./depth_solver.prototxt |& tee logs/train_depth.$NOW.log $@"
+	echo "$TOOLS/caffe train --solver=./depth_solver.prototxt |& tee -i logs/train_depth.$NOW.log $@"
 
 fi
