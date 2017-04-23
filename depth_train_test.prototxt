@@ -521,22 +521,58 @@ layer {
     }
   }
 }
+layer {
+  name: "make2d"
+  type: "Reshape"
+  bottom: "joint_fc"
+  top: "joint_reshape"
+  reshape_param {
+    shape {
+      dim: 0
+      dim: 1
+      dim: 32
+      dim: 64
+    }
+  }
+}
+layer {
+  name: "upsample"
+  type: "Deconvolution"
+  bottom: "joint_reshape"
+  top: "joint_upsamp"
+  convolution_param{
+    kernel_size: 4
+    stride: 2
+    num_output: 1
+    group: 1
+    pad: 1
+    weight_filler: {
+      type: "bilinear"
+    }
+    bias_term: false
+  }
+  param {
+     lr_mult: 0
+    decay_mult: 0
+  }
+}
+
 
 
 ######################################
 #### PROCESS: ground truth        ####
 ######################################
-layer {
-  name: "pool1_GT"
-  type: "Pooling"
-  bottom: "GT_data"
-  top: "pool1_GT"
-  pooling_param {
-    pool: MAX
-    kernel_size: 2
-    stride: 2
-  }
-}
+#layer {
+#  name: "pool1_GT"
+#  type: "Pooling"
+#  bottom: "GT_data"
+#  top: "pool1_GT"
+#  pooling_param {
+#    pool: MAX
+#    kernel_size: 2
+#    stride: 2
+#  }
+#}
 
 
 ######################################
@@ -545,7 +581,7 @@ layer {
 layer {
   name: "loss"
   type: "EuclideanLoss"
-  bottom: "joint_fc"
-  bottom: "pool1_GT"
+  bottom: "joint_upsamp"
+  bottom: "GT_data"
   top: "loss"
 }
