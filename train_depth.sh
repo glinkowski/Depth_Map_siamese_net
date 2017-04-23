@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/bin/bash
 set -e
 
 # USAGE
@@ -18,13 +18,11 @@ echo "$NOW & then"
 if [ $# -gt 0]; then
 	echo "Resuming training from iteration $1"
 	$TOOLS/caffe train --solver=./depth_solver.prototxt \
-		--snapshot snapshots/depth_iter_$1.solverstate
+		--snapshot snapshots/depth_iter_$1.solverstate \
+		|& tee -i train_depth_$NOW.log $@
 else
-#	GLOG_logtostderr=1 \
-#		$TOOLS/caffe train --solver=./depth_solver.prototxt \
-#		|%26 tee -i train_depth_2.log $@
-	echo ""
-	echo "Copy and run the following: "
-	echo "$TOOLS/caffe train --solver=./depth_solver.prototxt |& tee -i logs/train_depth.$NOW.log $@"
-
+#	GLOG_logtostderr=true \
+#		GLOG_log_dir=logs_glog/single \
+	$TOOLS/caffe train --solver=./depth_solver.prototxt \
+		|& tee -i train_depth_$NOW.log $@
 fi
