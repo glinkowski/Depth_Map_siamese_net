@@ -1,0 +1,31 @@
+# The train/test net protocol buffer definition
+net: "./depth_fuse_train_test.prototxt"
+# test_iter specifies how many forward passes the test should carry out.
+# Train images: 2128, Test images: 236
+
+# number of test iterations
+#	batch 8 * iter 30 = 240
+test_iter: 30
+# how often to run on test data
+test_interval: 300
+max_iter: 4800
+snapshot: 1200
+snapshot_prefix: "snapshots/depth"
+
+#lr_policy: "inv"
+#gamma: 0.0001
+#power: 0.75
+#base_lr: 0.001
+#momentum: 0.9
+#weight_decay: 0.0005
+
+lr_policy: "step"
+stepsize: 1200
+base_lr: 0.0005
+gamma: 0.2
+momentum: 0.9
+weight_decay: 0.0005
+
+display: 50
+
+solver_mode: GPU

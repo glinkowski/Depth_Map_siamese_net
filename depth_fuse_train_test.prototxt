@@ -1,0 +1,733 @@
+name: "depth_map_train_test"
+
+
+######################################
+#### LOAD DATA: 3 training images ####
+######################################
+layer {
+  name: "LTrain_data"
+  type: "Data"
+  top: "L_data"
+  top: "L_junk_label"
+  include {
+    phase: TRAIN
+  }
+  transform_param {
+  }
+  data_param {
+    source: "lmdb_files/depth_train_L_lmdb"
+    batch_size: 10
+    backend: LMDB
+  }
+}
+layer {
+  name: "RTrain_data"
+  type: "Data"
+  top: "R_data"
+  top: "R_junk_label"
+  include {
+    phase: TRAIN
+  }
+  transform_param {
+  }
+  data_param {
+    source: "lmdb_files/depth_train_R_lmdb"
+    batch_size: 10
+    backend: LMDB
+  }
+}
+layer {
+  name: "GTTrain_data"
+  type: "Data"
+  top: "GT_data"
+  top: "GT_junk_label"
+  include {
+    phase: TRAIN
+  }
+  transform_param {
+  }
+  data_param {
+    source: "lmdb_files/depth_train_GT_lmdb"
+    batch_size: 10
+    backend: LMDB
+  }
+}
+
+
+######################################
+#### LOAD DATA: 3 testing images  ####
+######################################
+layer {
+  name: "LTest_data"
+  type: "Data"
+  top: "L_data"
+  top: "L_junk_label"
+  include {
+    phase: TEST
+  }
+  transform_param {
+  }
+  data_param {
+    source: "lmdb_files/depth_test_L_lmdb"
+    batch_size: 10
+    backend: LMDB
+  }
+}
+layer {
+  name: "RTest_data"
+  type: "Data"
+  top: "R_data"
+  top: "R_junk_label"
+  include {
+    phase: TEST
+  }
+  transform_param {
+  }
+  data_param {
+    source: "lmdb_files/depth_test_R_lmdb"
+    batch_size: 10
+    backend: LMDB
+  }
+}
+layer {
+  name: "GTTest_data"
+  type: "Data"
+  top: "GT_data"
+  top: "GT_junk_label"
+  include {
+    phase: TEST
+  }
+  transform_param {
+  }
+  data_param {
+    source: "lmdb_files/depth_test_GT_lmdb"
+    batch_size: 10
+    backend: LMDB
+  }
+}
+
+
+######################################
+#### SILENCE OUTPUT: fake labels  ####
+######################################
+layer {
+  name: "stfu_L"
+  type: "Silence"
+  bottom: "L_junk_label"
+}
+layer {
+  name: "stfu_R"
+  type: "Silence"
+  bottom: "R_junk_label"
+}
+layer {
+  name: "stfu_GT"
+  type: "Silence"
+  bottom: "GT_junk_label"
+}
+
+
+######################################
+#### STEP 1: initial conv         ####
+####    out: 64 x 128             ####
+######################################
+layer {
+  name: "conv1_L"
+  type: "Convolution"
+  bottom: "L_data"
+  top: "conv1_L"
+  param {
+    name: "conv1_w"
+    lr_mult: 1
+  }
+  param {
+    name: "conv1_b"
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 8
+    kernel_size: 11
+    pad: 5
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "relu1_L"
+  type: "ReLU"
+  bottom: "conv1_L"
+  top: "conv1_L"
+}
+layer {
+  name: "norm1_L"
+  type: "LRN"
+  bottom: "conv1_L"
+  top: "conv1_L"
+  lrn_param {
+    local_size: 5
+    alpha: 0.25
+    beta: 0.75
+    norm_region: WITHIN_CHANNEL
+  }
+}
+layer {
+  name: "pool1_L"
+  type: "Pooling"
+  bottom: "conv1_L"
+  top: "pool1_L"
+  pooling_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+  }
+}
+
+
+layer {
+  name: "conv1_R"
+  type: "Convolution"
+  bottom: "R_data"
+  top: "conv1_R"
+  param {
+    name: "conv1_w"
+    lr_mult: 1
+  }
+  param {
+    name: "conv1_b"
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 8
+    kernel_size: 11
+    pad: 5
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "relu1_R"
+  type: "ReLU"
+  bottom: "conv1_R"
+  top: "conv1_R"
+}
+layer {
+  name: "norm1_R"
+  type: "LRN"
+  bottom: "conv1_R"
+  top: "conv1_R"
+  lrn_param {
+    local_size: 5
+    alpha: 0.25
+    beta: 0.75
+    norm_region: WITHIN_CHANNEL
+  }
+}
+layer {
+  name: "pool1_R"
+  type: "Pooling"
+  bottom: "conv1_R"
+  top: "pool1_R"
+  pooling_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+  }
+}
+
+
+######################################
+#### STEP 2a: conv 2              ####
+####    out: 32 x 64              ####
+######################################
+
+layer {
+  name: "conv2_L"
+  type: "Convolution"
+  bottom: "pool1_L"
+  top: "conv2_L"
+  param {
+    name: "conv2_w"
+    lr_mult: 1
+  }
+  param {
+    name: "conv2_b"
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 16
+    kernel_size: 5
+    pad: 2
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "relu2_L"
+  type: "ReLU"
+  bottom: "conv2_L"
+  top: "conv2_L"
+}
+layer {
+  name: "norm2_L"
+  type: "LRN"
+  bottom: "conv2_L"
+  top: "conv2_L"
+  lrn_param {
+    local_size: 5
+    alpha: 0.25
+    beta: 0.75
+    norm_region: WITHIN_CHANNEL
+  }
+}
+
+layer {
+  name: "conv2_R"
+  type: "Convolution"
+  bottom: "pool1_R"
+  top: "conv2_R"
+  param {
+    name: "conv2_w"
+    lr_mult: 1
+  }
+  param {
+    name: "conv2_b"
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 16
+    kernel_size: 5
+    pad: 2
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "relu2_R"
+  type: "ReLU"
+  bottom: "conv2_R"
+  top: "conv2_R"
+}
+layer {
+  name: "norm2_R"
+  type: "LRN"
+  bottom: "conv2_R"
+  top: "conv2_R"
+  lrn_param {
+    local_size: 5
+    alpha: 0.25
+    beta: 0.75
+    norm_region: WITHIN_CHANNEL
+  }
+}
+
+
+######################################
+#### STEP 2b: fuse                ####
+####    out: 32 x 64 x 1          ####
+######################################
+
+layer {
+  name: "fuse2"
+  type: "Concat"
+  bottom: "conv2_L"
+  bottom: "conv2_R"
+  top: "fuse2"
+  concat_param {
+    axis: 1
+  }
+}
+layer {
+  name: "fullCnct2"
+  type: "InnerProduct"
+  bottom: "fuse2"
+  top: "fc2"
+  inner_product_param {
+    num_output: 2048
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "make2d2"
+  type: "Reshape"
+  bottom: "fc2"
+  top: "reshape2"
+  reshape_param {
+    shape {
+      dim: 0
+      dim: 1
+      dim: 32
+      dim: 64
+    }
+  }
+}
+
+
+######################################
+#### STEP 3a: conv 3              ####
+####    out: 16 x 32 x 32         ####
+######################################
+
+layer {
+  name: "conv3_L"
+  type: "Convolution"
+  bottom: "reshape2"
+  top: "conv3_L"
+  param {
+    name: "conv3L_w"
+    lr_mult: 1
+  }
+  param {
+    name: "conv3L_b"
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 16
+    kernel_size: 5
+    pad: 2
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "relu3_L"
+  type: "ReLU"
+  bottom: "conv3_L"
+  top: "conv3_L"
+}
+layer {
+  name: "norm3_L"
+  type: "LRN"
+  bottom: "conv3_L"
+  top: "conv3_L"
+  lrn_param {
+    local_size: 5
+    alpha: 0.25
+    beta: 0.75
+    norm_region: WITHIN_CHANNEL
+  }
+}
+layer {
+  name: "pool3_L"
+  type: "Pooling"
+  bottom: "conv3_L"
+  top: "pool3_L"
+  pooling_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+  }
+}
+
+layer {
+  name: "conv3_R"
+  type: "Convolution"
+  bottom: "conv2_R"
+  top: "conv3_R"
+  param {
+    name: "conv3_w"
+    lr_mult: 1
+  }
+  param {
+    name: "conv3_b"
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 16
+    kernel_size: 5
+    pad: 2
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "relu3_R"
+  type: "ReLU"
+  bottom: "conv3_R"
+  top: "conv3_R"
+}
+layer {
+  name: "norm3_R"
+  type: "LRN"
+  bottom: "conv3_R"
+  top: "conv3_R"
+  lrn_param {
+    local_size: 5
+    alpha: 0.25
+    beta: 0.75
+    norm_region: WITHIN_CHANNEL
+  }
+}
+layer {
+  name: "pool3_R"
+  type: "Pooling"
+  bottom: "conv3_R"
+  top: "pool3_R"
+  pooling_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+  }
+}
+
+
+######################################
+#### STEP 3b: fuse                ####
+####    out: 16 x 32 x 4          ####
+######################################
+
+layer {
+  name: "fuse3"
+  type: "Concat"
+  bottom: "pool3_L"
+  bottom: "pool3_R"
+  top: "fuse3"
+  concat_param {
+    axis: 1
+  }
+}
+layer {
+  name: "fullCnct3"
+  type: "InnerProduct"
+  bottom: "fuse3"
+  top: "fc3"
+  inner_product_param {
+    num_output: 2048
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "make2d3"
+  type: "Reshape"
+  bottom: "fc3"
+  top: "reshape3"
+  reshape_param {
+    shape {
+      dim: 0
+      dim: 4
+      dim: 16
+      dim: 32
+    }
+  }
+}
+
+
+######################################
+#### STEP 4a: conv 4              ####
+####    out: 16 x 32 x 32         ####
+######################################
+
+layer {
+  name: "conv4_L"
+  type: "Convolution"
+  bottom: "reshape3"
+  top: "conv4_L"
+  param {
+    name: "conv4L_w"
+    lr_mult: 1
+  }
+  param {
+    name: "conv4L_b"
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 16
+    kernel_size: 5
+    pad: 2
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "relu4_L"
+  type: "ReLU"
+  bottom: "conv4_L"
+  top: "conv4_L"
+}
+layer {
+  name: "norm4_L"
+  type: "LRN"
+  bottom: "conv4_L"
+  top: "conv4_L"
+  lrn_param {
+    local_size: 5
+    alpha: 0.25
+    beta: 0.75
+    norm_region: WITHIN_CHANNEL
+  }
+}
+
+layer {
+  name: "conv4_R"
+  type: "Convolution"
+  bottom: "pool3_R"
+  top: "conv4_R"
+  param {
+    name: "conv4_w"
+    lr_mult: 1
+  }
+  param {
+    name: "conv4_b"
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 16
+    kernel_size: 5
+    pad: 2
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "relu4_R"
+  type: "ReLU"
+  bottom: "conv4_R"
+  top: "conv4_R"
+}
+layer {
+  name: "norm4_R"
+  type: "LRN"
+  bottom: "conv4_R"
+  top: "conv4_R"
+  lrn_param {
+    local_size: 5
+    alpha: 0.25
+    beta: 0.75
+    norm_region: WITHIN_CHANNEL
+  }
+}
+
+
+######################################
+#### STEP 4b: fuse                ####
+####    out: 32 x 64 x 1          ####
+######################################
+
+layer {
+  name: "fuse4"
+  type: "Concat"
+  bottom: "conv4_L"
+  bottom: "conv4_R"
+  top: "fuse4"
+  concat_param {
+    axis: 1
+  }
+}
+layer {
+  name: "fullCnct4"
+  type: "InnerProduct"
+  bottom: "fuse4"
+  top: "fc4"
+  inner_product_param {
+    num_output: 2048
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "make2d4"
+  type: "Reshape"
+  bottom: "fc4"
+  top: "reshape4"
+  reshape_param {
+    shape {
+      dim: 0
+      dim: 1
+      dim: 32
+      dim: 64
+    }
+  }
+}
+
+
+######################################
+#### STEP 5: upsample             ####
+####    out: 32 x 64 x 1          ####
+######################################
+layer {
+  name: "upsample"
+  type: "Deconvolution"
+  bottom: "reshape4"
+  top: "joint_upsamp"
+  convolution_param{
+    kernel_size: 4
+    stride: 2
+    num_output: 1
+    group: 1
+    pad: 1
+    weight_filler: {
+      type: "bilinear"
+    }
+    bias_term: false
+  }
+  param {
+     lr_mult: 0
+    decay_mult: 0
+  }
+}
+
+
+######################################
+#### STEP 6: loss                 ####
+####    out: 1                    ####
+######################################
+layer {
+  name: "loss"
+  type: "EuclideanLoss"
+  bottom: "joint_upsamp"
+  bottom: "GT_data"
+  top: "loss"
+}
