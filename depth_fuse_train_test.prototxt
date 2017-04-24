@@ -385,6 +385,12 @@ layer {
     }
   }
 }
+layer {
+  name: "relu2_F"
+  type: "ReLU"
+  bottom: "reshape2"
+  top: "reshape2"
+}
 
 
 ######################################
@@ -591,6 +597,21 @@ layer {
       dim: 16
       dim: 32
     }
+  }
+}
+layer {
+  name: "relu3_F"
+  type: "ReLU"
+  bottom: "reshape3"
+  top: "reshape3"
+}
+layer {
+  name: "drop3_F"
+  type: "Dropout"
+  bottom: "reshape3"
+  top: "reshape3"
+  dropout_param {
+    dropout_ratio: 0.5
   }
 }
 
