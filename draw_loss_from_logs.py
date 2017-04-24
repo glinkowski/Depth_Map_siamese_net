@@ -1,0 +1,193 @@
+# ---------------------------------------------------------
+# author: Greg Linkowski
+# project: Depth Maps from Siamese Nets
+# class: ECE 547
+# 
+# For every file in the logs/ directory, extract the
+#	iteration and loss, then plot.
+# ---------------------------------------------------------
+
+import matplotlib as plt
+import os
+
+
+
+######## ######## ######## ######## 
+# PARAMETERS
+
+# Expected location of log files
+logDir = 'logs/'
+
+
+######## ######## ######## ######## 
+
+
+
+
+######## ######## ######## ######## 
+# ANCILLARY FUNCTION(S)
+
+def parseLogFile(fname) :
+
+	# Expected iterations between testing
+	tstGap = 300
+	trnGap = 50
+
+	# The items to return:
+	#	train & test iterations, train & test loss
+	#	(and upsampled loss if exists)
+	trnIter = list()
+	trnLoss = list()
+	trnUpLoss = list()
+	tstIter = list()
+	tstLoss = list()
+	tstUpLoss = list()
+
+
+	with open(fname, 'r') as fin :
+		for line in fin :
+
+			# skip short lines
+			if len(line) < 76 :
+				continue
+			else :
+				lv = line.split()
+
+				# Append the iteration, loss, and optional upsampled_loss
+				if lv[4] == 'Train' :
+					if lv[8] == 'loss' :
+						trnLoss.append(lv[10])
+					elif lv[8] == 'upsampled_loss' :
+						trnUpLoss.append(lv[8])
+				elif lv[4] == 'Test' :
+					if lv[8] == 'loss' :
+						tstLoss.append(lv[10])
+					elif lv[8] == 'upsampled_loss' :
+						tstUpLoss.append(lv[8])
+				# elif lv[4] == 'Iteration' :
+				# 	if lv[5] != trnIter[len(trnIter)-1] :
+				# 		trnIter.append(lv[5])
+				#end if
+	#end with
+
+	# Manually fill in test iterations using tstGap
+	nextIter = 0
+	for i in range(len(tstLoss)) :
+		tstIter.append(nextIter)
+		nextIter += tstGap
+	#end for
+
+	# Manually fill in train iterations using trnGap
+	nextIter = 0
+	for i in range(len(trnLoss)) :
+		trnIter.append(nextIter)
+		nextIter += trnGap
+	#end for
+
+	return trnIter, trnLoss, trnUpLoss, tstIter, tstLoss, tstUpLoss
+#end def ######## ######## ######## 
+
+
+def saveStatsTextFile(fname, trnIter, trnLoss, trnUpLoss, tstIter, tstLoss, tstUpLoss) :
+
+	# Extract the name for this net/log
+	fnSplit = fname.split('/')
+	thisName = fnSplit[len(fnSplit)-1]
+	thisName = thisName[0:-4]
+
+	# Set flag to include Upsampled Loss
+	hasUp = False
+	if len(trnUpLoss) > 0 :
+		hasUp = True
+
+	# Write to the stats .txt
+	with open(fname, 'w') as fout :
+		fout.write('NET\t{}'.format(thisName))
+		fout.write('\nWITH_UPS\t{}'.format(hasUp))
+		fout.write('\nTRN_ITER')
+		for i in range(len(trnIter)) :
+			fout.write('\t{}'.format(trnIter[i]))
+		fout.write('\nTRN_LOSS')
+		for i in range(len(trnLoss)) :
+			fout.write('\t{}'.format(trnLoss[i]))
+		fout.write('\nTST_ITER')
+		for i in range(len(tstIter)) :
+			fout.write('\t{}'.format(tstIter[i]))
+		fout.write('\nTST_LOSS')
+		for i in range(len(tstLoss)) :
+			fout.write('\t{}'.format(tstLoss[i]))
+
+		if hasUp :
+			fout.write('\nTRN_ITER')
+			for i in range(len(trnIter)) :
+				fout.write('\t{}'.format(trnIter[i]))
+			fout.write('\nTRN_LOSS_UPS')
+			for i in range(len(trnUpLoss)) :
+				fout.write('\t{}'.format(trnUpLoss[i]))
+			fout.write('\nTST_ITER')
+			for i in range(len(tstIter)) :
+				fout.write('\t{}'.format(tstIter[i]))
+			fout.write('\nTST_LOSS_UPS')
+			for i in range(len(tstUpLoss)) :
+				fout.write('\t{}'.format(tstUpLoss[i]))
+		#end if
+	#end with
+
+	return
+#end def ######## ######## ######## 
+
+
+def extractFromLogFiles(path) :
+
+	# The items to return:
+	#	names of log files, train iters & loss, test iters & loss
+
+
+	# Get the name of every file in dir, keep only .log
+	fileSet = set(os.listdir(path))
+	logFileList = [lf for lf in fileSet if lf.endswith('.log')]
+
+	for lf in logFileList :
+
+		netName = lf[0:-4]
+
+		# Call func to read the file
+		lfName = path + lf
+		trnIter, trnLoss, trnUpLoss, tstIter, tstLoss, tstUpLoss = parseLogFile(lfName)
+
+		# Call func to write loss stats to text file
+		sName = path + netName + '.txt'
+		saveStatsTextFile(sName, trnIter, trnLoss, trnUpLoss, tstIter, tstLoss, tstUpLoss)
+
+		# Call func to draw loss plots
+		imgPrefix = netName
+
+
+		if len(trnUpLoss) > 0 :
+			imgPrefix = netName + '_up'
+
+		#end if
+		
+
+		print(len(trnIter), len(trnLoss))
+		print(len(tstIter), len(tstLoss))
+
+
+
+#end def ######## ######## ######## 
+
+
+
+
+######## ######## ######## ######## 
+# PRIMARY FUNCTION(S)
+
+
+#end def ######## ######## ######## 
+
+
+
+######## ######## ######## ######## 
+# FUNCTION CALL
+
+extractFromLogFiles(logDir)
