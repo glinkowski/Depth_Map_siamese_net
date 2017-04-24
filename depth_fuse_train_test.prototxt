@@ -507,7 +507,7 @@ layer {
 
 ######################################
 #### STEP 3b: fuse                ####
-####    out: 16 x 32 x 4          ####
+####    out: 16 x 32 x 6          ####
 ######################################
 
 layer {
@@ -526,7 +526,7 @@ layer {
   bottom: "fuse3"
   top: "fc3"
   inner_product_param {
-    num_output: 2048
+    num_output: 3072
     weight_filler {
       type: "xavier"
     }
@@ -543,7 +543,7 @@ layer {
   reshape_param {
     shape {
       dim: 0
-      dim: 4
+      dim: 6
       dim: 16
       dim: 32
     }
@@ -570,7 +570,7 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 16
+    num_output: 32
     kernel_size: 5
     pad: 2
     stride: 1
@@ -615,7 +615,7 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 16
+    num_output: 32
     kernel_size: 5
     pad: 2
     stride: 1
@@ -729,5 +729,35 @@ layer {
   type: "EuclideanLoss"
   bottom: "joint_upsamp"
   bottom: "GT_data"
+  top: "upsampled_loss"
+}
+
+
+######################################
+#### STEP 5 alt: downsample GT    ####
+####    out: 32 x 64 x 1          ####
+######################################
+layer {
+  name: "pool1_GT"
+  type: "Pooling"
+  bottom: "GT_data"
+  top: "pool1_GT"
+  pooling_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+  }
+}
+
+
+######################################
+#### STEP 6 alt: loss             ####
+####    out: 1                    ####
+######################################
+layer {
+  name: "loss_alt"
+  type: "EuclideanLoss"
+  bottom: "reshape4"
+  bottom: "pool1_GT"
   top: "loss"
 }
