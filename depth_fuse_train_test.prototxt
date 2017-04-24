@@ -16,7 +16,7 @@ layer {
   }
   data_param {
     source: "lmdb_files/depth_train_L_lmdb"
-    batch_size: 10
+    batch_size: 5
     backend: LMDB
   }
 }
@@ -32,7 +32,7 @@ layer {
   }
   data_param {
     source: "lmdb_files/depth_train_R_lmdb"
-    batch_size: 10
+    batch_size: 5
     backend: LMDB
   }
 }
@@ -48,7 +48,7 @@ layer {
   }
   data_param {
     source: "lmdb_files/depth_train_GT_lmdb"
-    batch_size: 10
+    batch_size: 5
     backend: LMDB
   }
 }
@@ -69,7 +69,7 @@ layer {
   }
   data_param {
     source: "lmdb_files/depth_test_L_lmdb"
-    batch_size: 10
+    batch_size: 5
     backend: LMDB
   }
 }
@@ -85,7 +85,7 @@ layer {
   }
   data_param {
     source: "lmdb_files/depth_test_R_lmdb"
-    batch_size: 10
+    batch_size: 5
     backend: LMDB
   }
 }
@@ -101,7 +101,7 @@ layer {
   }
   data_param {
     source: "lmdb_files/depth_test_GT_lmdb"
-    batch_size: 10
+    batch_size: 5
     backend: LMDB
   }
 }
@@ -437,10 +437,54 @@ layer {
   top: "conv3_L"
 }
 layer {
-  name: "pool3_L"
-  type: "Pooling"
+  name: "conv3b_L"
+  type: "Convolution"
   bottom: "conv3_L"
-  top: "pool3_L"
+  top: "conv3b_L"
+  param {
+    name: "conv3Lb_w"
+    lr_mult: 1
+  }
+  param {
+    name: "conv3Lb_b"
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 16
+    kernel_size: 5
+    pad: 2
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "norm3b_L"
+  type: "LRN"
+  bottom: "conv3b_L"
+  top: "conv3b_L"
+  lrn_param {
+    local_size: 5
+    alpha: 0.25
+    beta: 0.75
+    norm_region: WITHIN_CHANNEL
+  }
+}
+layer {
+  name: "relu3b_L"
+  type: "ReLU"
+  bottom: "conv3b_L"
+  top: "conv3b_L"
+}
+layer {
+  name: "pool3b_L"
+  type: "Pooling"
+  bottom: "conv3b_L"
+  top: "pool3b_L"
   pooling_param {
     pool: MAX
     kernel_size: 2
@@ -513,7 +557,7 @@ layer {
 layer {
   name: "fuse3"
   type: "Concat"
-  bottom: "pool3_L"
+  bottom: "pool3b_L"
   bottom: "pool3_R"
   top: "fuse3"
   concat_param {
@@ -526,7 +570,7 @@ layer {
   bottom: "fuse3"
   top: "fc3"
   inner_product_param {
-    num_output: 3072
+    num_output: 4096
     weight_filler {
       type: "xavier"
     }
@@ -543,7 +587,7 @@ layer {
   reshape_param {
     shape {
       dim: 0
-      dim: 6
+      dim: 8
       dim: 16
       dim: 32
     }
@@ -600,6 +644,50 @@ layer {
   bottom: "conv4_L"
   top: "conv4_L"
 }
+layer {
+  name: "conv4b_L"
+  type: "Convolution"
+  bottom: "conv4_L"
+  top: "conv4b_L"
+  param {
+    name: "conv4Lb_w"
+    lr_mult: 1
+  }
+  param {
+    name: "conv4Lb_b"
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 32
+    kernel_size: 5
+    pad: 2
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "norm4b_L"
+  type: "LRN"
+  bottom: "conv4b_L"
+  top: "conv4b_L"
+  lrn_param {
+    local_size: 5
+    alpha: 0.25
+    beta: 0.75
+    norm_region: WITHIN_CHANNEL
+  }
+}
+layer {
+  name: "relu4b_L"
+  type: "ReLU"
+  bottom: "conv4b_L"
+  top: "conv4b_L"
+}
 
 layer {
   name: "conv4_R"
@@ -655,7 +743,7 @@ layer {
 layer {
   name: "fuse4"
   type: "Concat"
-  bottom: "conv4_L"
+  bottom: "conv4b_L"
   bottom: "conv4_R"
   top: "fuse4"
   concat_param {

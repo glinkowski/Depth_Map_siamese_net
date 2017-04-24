@@ -5,10 +5,11 @@ net: "./depth_fuse_train_test.prototxt"
 
 # number of test iterations
 #	batch 8 * iter 30 = 240
-test_iter: 30
+#	batch 5 * iter 48 = 240
+test_iter: 48
 # how often to run on test data
 test_interval: 300
-max_iter: 4800
+max_iter: 3000
 snapshot: 1200
 snapshot_prefix: "snapshots/depth"
 
@@ -20,9 +21,9 @@ snapshot_prefix: "snapshots/depth"
 #weight_decay: 0.0005
 
 lr_policy: "step"
-stepsize: 1200
-base_lr: 0.0001
-gamma: 0.2
+stepsize: 1000
+base_lr: 0.00001
+gamma: 0.1
 momentum: 0.9
 weight_decay: 0.0005
 
