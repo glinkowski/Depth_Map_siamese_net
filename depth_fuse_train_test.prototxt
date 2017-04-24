@@ -158,12 +158,6 @@ layer {
   }
 }
 layer {
-  name: "relu1_L"
-  type: "ReLU"
-  bottom: "conv1_L"
-  top: "conv1_L"
-}
-layer {
   name: "norm1_L"
   type: "LRN"
   bottom: "conv1_L"
@@ -174,6 +168,12 @@ layer {
     beta: 0.75
     norm_region: WITHIN_CHANNEL
   }
+}
+layer {
+  name: "relu1_L"
+  type: "ReLU"
+  bottom: "conv1_L"
+  top: "conv1_L"
 }
 layer {
   name: "pool1_L"
@@ -215,12 +215,6 @@ layer {
   }
 }
 layer {
-  name: "relu1_R"
-  type: "ReLU"
-  bottom: "conv1_R"
-  top: "conv1_R"
-}
-layer {
   name: "norm1_R"
   type: "LRN"
   bottom: "conv1_R"
@@ -231,6 +225,12 @@ layer {
     beta: 0.75
     norm_region: WITHIN_CHANNEL
   }
+}
+layer {
+  name: "relu1_R"
+  type: "ReLU"
+  bottom: "conv1_R"
+  top: "conv1_R"
 }
 layer {
   name: "pool1_R"
@@ -277,12 +277,6 @@ layer {
   }
 }
 layer {
-  name: "relu2_L"
-  type: "ReLU"
-  bottom: "conv2_L"
-  top: "conv2_L"
-}
-layer {
   name: "norm2_L"
   type: "LRN"
   bottom: "conv2_L"
@@ -293,6 +287,12 @@ layer {
     beta: 0.75
     norm_region: WITHIN_CHANNEL
   }
+}
+layer {
+  name: "relu2_L"
+  type: "ReLU"
+  bottom: "conv2_L"
+  top: "conv2_L"
 }
 
 layer {
@@ -322,12 +322,6 @@ layer {
   }
 }
 layer {
-  name: "relu2_R"
-  type: "ReLU"
-  bottom: "conv2_R"
-  top: "conv2_R"
-}
-layer {
   name: "norm2_R"
   type: "LRN"
   bottom: "conv2_R"
@@ -338,6 +332,12 @@ layer {
     beta: 0.75
     norm_region: WITHIN_CHANNEL
   }
+}
+layer {
+  name: "relu2_R"
+  type: "ReLU"
+  bottom: "conv2_R"
+  top: "conv2_R"
 }
 
 
@@ -419,12 +419,6 @@ layer {
   }
 }
 layer {
-  name: "relu3_L"
-  type: "ReLU"
-  bottom: "conv3_L"
-  top: "conv3_L"
-}
-layer {
   name: "norm3_L"
   type: "LRN"
   bottom: "conv3_L"
@@ -435,6 +429,12 @@ layer {
     beta: 0.75
     norm_region: WITHIN_CHANNEL
   }
+}
+layer {
+  name: "relu3_L"
+  type: "ReLU"
+  bottom: "conv3_L"
+  top: "conv3_L"
 }
 layer {
   name: "pool3_L"
@@ -475,12 +475,6 @@ layer {
   }
 }
 layer {
-  name: "relu3_R"
-  type: "ReLU"
-  bottom: "conv3_R"
-  top: "conv3_R"
-}
-layer {
   name: "norm3_R"
   type: "LRN"
   bottom: "conv3_R"
@@ -491,6 +485,12 @@ layer {
     beta: 0.75
     norm_region: WITHIN_CHANNEL
   }
+}
+layer {
+  name: "relu3_R"
+  type: "ReLU"
+  bottom: "conv3_R"
+  top: "conv3_R"
 }
 layer {
   name: "pool3_R"
@@ -583,12 +583,6 @@ layer {
   }
 }
 layer {
-  name: "relu4_L"
-  type: "ReLU"
-  bottom: "conv4_L"
-  top: "conv4_L"
-}
-layer {
   name: "norm4_L"
   type: "LRN"
   bottom: "conv4_L"
@@ -599,6 +593,12 @@ layer {
     beta: 0.75
     norm_region: WITHIN_CHANNEL
   }
+}
+layer {
+  name: "relu4_L"
+  type: "ReLU"
+  bottom: "conv4_L"
+  top: "conv4_L"
 }
 
 layer {
@@ -628,12 +628,6 @@ layer {
   }
 }
 layer {
-  name: "relu4_R"
-  type: "ReLU"
-  bottom: "conv4_R"
-  top: "conv4_R"
-}
-layer {
   name: "norm4_R"
   type: "LRN"
   bottom: "conv4_R"
@@ -644,6 +638,12 @@ layer {
     beta: 0.75
     norm_region: WITHIN_CHANNEL
   }
+}
+layer {
+  name: "relu4_R"
+  type: "ReLU"
+  bottom: "conv4_R"
+  top: "conv4_R"
 }
 
 
