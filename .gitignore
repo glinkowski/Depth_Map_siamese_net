@@ -15,6 +15,7 @@ demo_prepped_images/m*.txt
 snapshots*/*
 demo_lmdb_files/*
 logs*/*
+*.png
 
 
 # Related Folders & Files #
