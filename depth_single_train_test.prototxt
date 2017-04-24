@@ -2,7 +2,7 @@ name: "depth_map_train_test"
 
 
 ######################################
-#### LOAD DATA: 3 training images ####
+#### LOAD DATA: 2 training images ####
 ######################################
 layer {
   name: "LTrain_data"
