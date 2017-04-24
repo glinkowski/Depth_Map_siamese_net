@@ -138,6 +138,50 @@ layer {
     norm_region: WITHIN_CHANNEL
   }
 }
+#layer {
+#  name: "conv1_L"
+#  type: "Convolution"
+#  bottom: "L_data"
+#  top: "conv1_L"
+#  param {
+#    name: "conv1_w"
+#    lr_mult: 1
+#  }
+#  param {
+#    name: "conv1_b"
+#    lr_mult: 2
+#  }
+#  convolution_param {
+#    num_output: 8
+#    kernel_size: 11
+#    pad: 5
+#    stride: 1
+#    weight_filler {
+#      type: "xavier"
+#    }
+#    bias_filler {
+#      type: "constant"
+#    }
+#  }
+#}
+#layer {
+#  name: "relu1_L"
+#  type: "ReLU"
+#  bottom: "conv1_L"
+#  top: "conv1_L"
+#}
+#layer {
+#  name: "norm1_L"
+#  type: "LRN"
+#  bottom: "conv1_L"
+#  top: "conv1_L"
+#  lrn_param {
+#    local_size: 5
+#    alpha: 0.25
+#    beta: 0.75
+#    norm_region: WITHIN_CHANNEL
+#  }
+#}
 layer {
   name: "pool1_L"
   type: "Pooling"
@@ -240,9 +284,53 @@ layer {
   }
 }
 layer {
+  name: "conv3b_L"
+  type: "Convolution"
+  bottom: "conv3_L"
+  top: "conv3b_L"
+  param {
+    name: "conv3b_w"
+    lr_mult: 1
+  }
+  param {
+    name: "conv3b_b"
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 64
+    kernel_size: 5
+    pad: 2
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "relu3b_L"
+  type: "ReLU"
+  bottom: "conv3b_L"
+  top: "conv3b_L"
+}
+layer {
+  name: "norm3b_L"
+  type: "LRN"
+  bottom: "conv3b_L"
+  top: "conv3b_L"
+  lrn_param {
+    local_size: 5
+    alpha: 0.25
+    beta: 0.75
+    norm_region: WITHIN_CHANNEL
+  }
+}
+layer {
   name: "pool3_L"
   type: "Pooling"
-  bottom: "conv3_L"
+  bottom: "conv3b_L"
   top: "pool3_L"
   pooling_param {
     pool: MAX
@@ -298,12 +386,80 @@ layer {
 
 
 ######################################
+#### PROCESS: Fully Connect       ####
+######################################
+layer {
+  name: "fc5"
+  type: "InnerProduct"
+  bottom: "conv4_L"
+  top: "fc5"
+  inner_product_param {
+    num_output: 4096
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "relu5_F"
+  type: "ReLU"
+  bottom: "fc5"
+  top: "fc5"
+}
+layer {
+  name: "drop5_F"
+  type: "Dropout"
+  bottom: "fc5"
+  top: "fc5"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layer {
+  name: "fc6"
+  type: "InnerProduct"
+  bottom: "fc5"
+  top: "fc6"
+  inner_product_param {
+    num_output: 4096
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "relu5_F"
+  type: "ReLU"
+  bottom: "fc6"
+  top: "fc6"
+}
+layer {
+  name: "drop6_F"
+  type: "Dropout"
+  bottom: "fc6"
+  top: "fc6"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+
+
+
+
+
+######################################
 #### PROCESS: Upsample            ####
 ######################################
 layer {
   name: "join_InnerProduct"
   type: "InnerProduct"
-  bottom: "conv4_L"
+  bottom: "fc6"
   top: "fcUp"
   inner_product_param {
     num_output: 2048
@@ -360,5 +516,36 @@ layer {
   type: "EuclideanLoss"
   bottom: "upsamp"
   bottom: "GT_data"
+  top: "upsampled_loss"
+}
+
+
+
+######################################
+#### STEP 5 alt: downsample GT    ####
+####    out: 32 x 64 x 1          ####
+######################################
+layer {
+  name: "pool1_GT"
+  type: "Pooling"
+  bottom: "GT_data"
+  top: "pool1_GT"
+  pooling_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+  }
+}
+
+
+######################################
+#### STEP 6 alt: loss             ####
+####    out: 1                    ####
+######################################
+layer {
+  name: "loss_alt"
+  type: "EuclideanLoss"
+  bottom: "reshaped"
+  bottom: "pool1_GT"
   top: "loss"
 }

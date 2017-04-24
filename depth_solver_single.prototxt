@@ -5,10 +5,10 @@ net: "./depth_single_train_test.prototxt"
 
 # number of test iterations
 #	batch 8 * iter 30 = 240
-test_iter: 30
+test_iter: 24
 # how often to run on test data
 test_interval: 300
-max_iter: 4800
+max_iter: 3000
 snapshot: 1200
 snapshot_prefix: "snapshots/depth"
 
@@ -20,8 +20,8 @@ snapshot_prefix: "snapshots/depth"
 #weight_decay: 0.0005
 
 lr_policy: "step"
-stepsize: 1200
-base_lr: 0.0005
+stepsize: 1000
+base_lr: 0.000001
 gamma: 0.2
 momentum: 0.9
 weight_decay: 0.0005
