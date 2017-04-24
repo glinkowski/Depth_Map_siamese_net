@@ -7,7 +7,7 @@
 #	iteration and loss, then plot.
 # ---------------------------------------------------------
 
-import matplotlib as plt
+import matplotlib.pyplot as plt
 import os
 
 
@@ -58,12 +58,12 @@ def parseLogFile(fname) :
 					if lv[8] == 'loss' :
 						trnLoss.append(lv[10])
 					elif lv[8] == 'upsampled_loss' :
-						trnUpLoss.append(lv[8])
+						trnUpLoss.append(lv[10])
 				elif lv[4] == 'Test' :
 					if lv[8] == 'loss' :
 						tstLoss.append(lv[10])
 					elif lv[8] == 'upsampled_loss' :
-						tstUpLoss.append(lv[8])
+						tstUpLoss.append(lv[10])
 				# elif lv[4] == 'Iteration' :
 				# 	if lv[5] != trnIter[len(trnIter)-1] :
 				# 		trnIter.append(lv[5])
@@ -117,6 +117,7 @@ def saveStatsTextFile(fname, trnIter, trnLoss, trnUpLoss, tstIter, tstLoss, tstU
 		for i in range(len(tstLoss)) :
 			fout.write('\t{}'.format(tstLoss[i]))
 
+		# write the upsampled loss if it was captured
 		if hasUp :
 			fout.write('\nTRN_ITER')
 			for i in range(len(trnIter)) :
@@ -136,6 +137,66 @@ def saveStatsTextFile(fname, trnIter, trnLoss, trnUpLoss, tstIter, tstLoss, tstU
 	return
 #end def ######## ######## ######## 
 
+
+def drawLossPlots(fPrefix, trnIter, trnLoss, tstIter, tstLoss) :
+
+	# Name the type of network used
+	netType = 'Siamese'
+	if 'fuse' in fPrefix :
+		netType = 'Multi-Fuse'
+	elif 'single' in fPrefix :
+		netType = 'Non-Stero'
+	#end if
+
+	print(netType)
+
+	# Draw the plot with both train & test
+	pName = fPrefix + '_both.png'
+
+	fig = plt.figure()
+
+	plt.plot(trnIter, trnLoss, tstIter, tstLoss)
+	plt.xlabel('Euclidian Loss')
+	plt.ylabel('Iterations')
+
+	plt.title('Train/Test Loss for {}'.format(netType))
+	plt.savefig(pName)
+	plt.close()
+
+	# Draw the plot with both train & test
+	pName = fPrefix + '_onlyTrain.png'
+
+	fig = plt.figure()
+
+	plt.plot(trnIter, trnLoss)
+	plt.xlabel('Euclidian Loss')
+	plt.ylabel('Iterations')
+
+	plt.title('Train Loss for {}'.format(netType))
+	plt.savefig(pName)
+	plt.close()
+
+	# Draw the plot with both train & test
+	pName = fPrefix + '_onlyTest.png'
+
+	fig = plt.figure()
+
+	plt.plot(tstIter, tstLoss)
+	plt.xlabel('Euclidian Loss')
+	plt.ylabel('Iterations')
+
+	plt.title('Test Loss for {}'.format(netType))
+	plt.savefig(pName)
+	plt.close()
+
+	return
+#end def ######## ######## ######## 
+
+
+
+
+######## ######## ######## ######## 
+# PRIMARY FUNCTION(S)
 
 def extractFromLogFiles(path) :
 
@@ -161,28 +222,16 @@ def extractFromLogFiles(path) :
 
 		# Call func to draw loss plots
 		imgPrefix = netName
+		drawLossPlots( (path + imgPrefix), trnIter, trnLoss, tstIter, tstLoss)
 
-
+		# Call to draw upsampled loss if it was captured
 		if len(trnUpLoss) > 0 :
 			imgPrefix = netName + '_up'
-
+			drawLossPlots( (path + imgPrefix), trnIter, trnUpLoss, tstIter, tstUpLoss)
 		#end if
-		
+	#end for
 
-		print(len(trnIter), len(trnLoss))
-		print(len(tstIter), len(tstLoss))
-
-
-
-#end def ######## ######## ######## 
-
-
-
-
-######## ######## ######## ######## 
-# PRIMARY FUNCTION(S)
-
-
+	return
 #end def ######## ######## ######## 
 
 
