@@ -583,5 +583,29 @@ layer {
   type: "EuclideanLoss"
   bottom: "joint_upsamp"
   bottom: "GT_data"
+  top: "upsampled_loss"
+}
+
+
+######################################
+#### PROCESS: alternate loss      ####
+####    out: 32 x 64 x 1          ####
+######################################
+layer {
+  name: "pool1_GT"
+  type: "Pooling"
+  bottom: "GT_data"
+  top: "pool1_GT"
+  pooling_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+  }
+}
+layer {
+  name: "loss_alt"
+  type: "EuclideanLoss"
+  bottom: "joint_reshape"
+  bottom: "pool1_GT"
   top: "loss"
 }
