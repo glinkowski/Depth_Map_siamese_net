@@ -43,8 +43,6 @@ def parseLogFile(fname) :
 	tstLoss = list()
 	tstUpLoss = list()
 
-	# print(trnIter, len(trnIter))
-
 	with open(fname, 'r') as fin :
 		for line in fin :
 
@@ -72,39 +70,13 @@ def parseLogFile(fname) :
 				#end if
 	#end with
 
-
-	# # Manually fill in test iterations using tstGap
-	# nextIter = 0
-	# for i in range(len(tstLoss)) :
-	# 	tstIter.append(nextIter)
-	# 	nextIter += tstGap
-	# #end for
-
-	# # Manually fill in train iterations using trnGap
-	# nextIter = 0
-	# for i in range(len(trnLoss)) :
-	# 	trnIter.append(nextIter)
-	# 	nextIter += trnGap
-	# #end for
-
-
 	if (len(trnIter) > 1) and (len(tstLoss) > 1) :
 		finIter = int(trnIter[-1])
-		print(finIter + 1)
-		print(finIter / (len(tstLoss) - 1))
 		tstIter = list(range( 0, finIter + 1, finIter/(len(tstLoss) - 1) ))
-		# print(len(tstIter), len(tstLoss))
-		# print(tstIter)
-		# return
 	#end if
 
 	if len(trnLoss) == 0 :
 		trnIter = list()
-
-	# print(trnIter, len(trnIter))
-	# print(trnLoss)
-	# print(tstIter)
-	# print(tstLoss)
 
 	return trnIter, trnLoss, trnUpLoss, tstIter, tstLoss, tstUpLoss
 #end def ######## ######## ######## 
@@ -244,7 +216,6 @@ def extractFromLogFiles(path) :
 
 		# Call func to draw loss plots
 		imgPrefix = path + 'plots/' + netName
-		# print( len(trnIter), len(trnLoss), len(tstIter), len(tstLoss) )
 		drawLossPlots( imgPrefix, trnIter, trnLoss, tstIter, tstLoss)
 
 		# Call to draw upsampled loss if it was captured
