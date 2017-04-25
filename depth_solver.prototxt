@@ -21,7 +21,7 @@ snapshot_prefix: "snapshots/depth"
 
 lr_policy: "step"
 stepsize: 1000
-base_lr: 0.0000001
+base_lr: 0.00000001
 gamma: 0.1
 momentum: 0.9
 weight_decay: 0.0005
