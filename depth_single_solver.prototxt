@@ -10,7 +10,7 @@ test_iter: 24
 test_interval: 100
 max_iter: 2100
 snapshot: 700
-snapshot_prefix: "snapshots/depth"
+snapshot_prefix: "snapshots/depth_single"
 
 #lr_policy: "inv"
 #gamma: 0.0001
