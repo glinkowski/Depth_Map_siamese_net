@@ -1,4 +1,4 @@
-name: "depth_map_train_test"
+name: "depth_fuse"
 
 
 ######################################
@@ -205,7 +205,7 @@ layer {
   name: "norm1b_L"
   type: "LRN"
   bottom: "conv1b_L"
-  top: "conv1_L"
+  top: "conv1b_L"
   lrn_param {
     local_size: 5
     alpha: 0.25
@@ -306,7 +306,7 @@ layer {
   name: "norm1b_R"
   type: "LRN"
   bottom: "conv1b_R"
-  top: "conv1_R"
+  top: "conv1b_R"
   lrn_param {
     local_size: 5
     alpha: 0.25
