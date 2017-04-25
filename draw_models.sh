@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# Draw .png of each model, place in the
+# Draw .png of each model, place in the root folder
 
 PYLOC=~/Caffe/python
 
