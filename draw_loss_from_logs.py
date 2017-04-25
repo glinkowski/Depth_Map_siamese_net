@@ -217,7 +217,7 @@ def extractFromLogFiles(path) :
 		trnIter, trnLoss, trnUpLoss, tstIter, tstLoss, tstUpLoss = parseLogFile(lfName)
 
 		# Call func to write loss stats to text file
-		sName = path + netName + '.txt'
+		sName = path + 'plots/' + netName + '.txt'
 		saveStatsTextFile(sName, trnIter, trnLoss, trnUpLoss, tstIter, tstLoss, tstUpLoss)
 
 		# Call func to draw loss plots
