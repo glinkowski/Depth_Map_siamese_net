@@ -75,8 +75,11 @@ def parseLogFile(fname) :
 		tstIter = list(range( 0, finIter + 1, finIter/(len(tstLoss) - 1) ))
 	#end if
 
+	# Catch for badly formatted log file (ie: premature exit / error)
 	if len(trnLoss) == 0 :
 		trnIter = list()
+	if len(tstLoss) == 0 :
+		tstIter = list()
 
 	return trnIter, trnLoss, trnUpLoss, tstIter, tstLoss, tstUpLoss
 #end def ######## ######## ######## 
