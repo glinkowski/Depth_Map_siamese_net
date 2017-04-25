@@ -24,5 +24,5 @@ else
 #	GLOG_logtostderr=true \
 #		GLOG_log_dir=logs_glog/single \
 	$TOOLS/caffe train --solver=./depth_siamese_solver.prototxt \
-		|& tee -i logs/train_depth_$NOW.log $@
+		|& tee -i logs/train_depth_siamese_$NOW.log $@
 fi
