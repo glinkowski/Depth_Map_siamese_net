@@ -1,5 +1,5 @@
 # The train/test net protocol buffer definition
-net: "./depth_train_test.prototxt"
+net: "./depth_siamese_train_test.prototxt"
 # test_iter specifies how many forward passes the test should carry out.
 # Train images: 2128, Test images: 236
 
@@ -10,7 +10,7 @@ test_iter: 24
 test_interval: 100
 max_iter: 2100
 snapshot: 700
-snapshot_prefix: "snapshots/depth"
+snapshot_prefix: "snapshots/depth_siamese"
 
 #lr_policy: "inv"
 #gamma: 0.0001
