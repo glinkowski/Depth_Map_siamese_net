@@ -4,12 +4,12 @@ net: "./depth_single_train_test.prototxt"
 # Train images: 2128, Test images: 236
 
 # number of test iterations
-#	batch 8 * iter 30 = 240
+#	batch 10 * iter 24 = 240
 test_iter: 24
 # how often to run on test data
-test_interval: 300
-max_iter: 3000
-snapshot: 1200
+test_interval: 100
+max_iter: 2100
+snapshot: 700
 snapshot_prefix: "snapshots/depth"
 
 #lr_policy: "inv"
@@ -26,6 +26,6 @@ gamma: 0.2
 momentum: 0.9
 weight_decay: 0.0005
 
-display: 50
+display: 25
 
 solver_mode: GPU
