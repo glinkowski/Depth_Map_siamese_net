@@ -2,32 +2,69 @@ name: "depth_siamese_deploy"
 
 
 ######################################
-#### LOAD DATA: 3 training images ####
+#### LOAD DATA: 2 images          ####
+######################################
+#layer {
+#  name: "L_data"
+#  type: "Input"
+#  top: "L_data"
+#  input_param {
+#    shape: {
+#      dim: 1
+#      dim: 1
+#      dim: 64
+#      dim: 128
+#    }
+#  }
+#}
+#layer {
+#  name: "R_data"
+#  type: "Input"
+#  top: "R_data"
+#  input_param {
+#    shape: {
+#      dim: 1
+#      dim: 1
+#      dim: 64
+#      dim: 128
+#    }
+#  }
+#}
+
+
+######################################
+#### LOAD DATA: 2 img from lmdb   ####
 ######################################
 layer {
-  name: "L_data"
-  type: "Input"
+  name: "LTrain_data"
+  type: "Data"
   top: "L_data"
-  input_param {
-    shape: {
-      dim: 1
-      dim: 1
-      dim: 64
-      dim: 128
-    }
+  top: "L_junk_label"
+  include {
+    phase: TRAIN
+  }
+  transform_param {
+  }
+  data_param {
+    source: "lmdb_files/depth_deploy_L_lmdb"
+    batch_size: 10
+    backend: LMDB
   }
 }
 layer {
-  name: "R_data"
-  type: "Input"
+  name: "RTrain_data"
+  type: "Data"
   top: "R_data"
-  input_param {
-    shape: {
-      dim: 1
-      dim: 1
-      dim: 64
-      dim: 128
-    }
+  top: "R_junk_label"
+  include {
+    phase: TRAIN
+  }
+  transform_param {
+  }
+  data_param {
+    source: "lmdb_files/depth_deploy_R_lmdb"
+    batch_size: 10
+    backend: LMDB
   }
 }
 
