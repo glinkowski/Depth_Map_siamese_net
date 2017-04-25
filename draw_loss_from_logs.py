@@ -53,20 +53,21 @@ def parseLogFile(fname) :
 			else :
 				lv = line.split()
 
-				# Append the iteration, loss, and optional upsampled_loss
-				if lv[4] == 'Train' :
-					if lv[8] == 'loss' :
-						trnLoss.append(lv[10])
-					elif lv[8] == 'upsampled_loss' :
-						trnUpLoss.append(lv[10])
-				elif lv[4] == 'Test' :
-					if lv[8] == 'loss' :
-						tstLoss.append(lv[10])
-					elif lv[8] == 'upsampled_loss' :
-						tstUpLoss.append(lv[10])
-				# elif lv[4] == 'Iteration' :
-				# 	if lv[5] != trnIter[len(trnIter)-1] :
-				# 		trnIter.append(lv[5])
+				if len(lv) > 10 :
+					# Append the iteration, loss, and optional upsampled_loss
+					if lv[4] == 'Train' :
+						if lv[8] == 'loss' :
+							trnLoss.append(lv[10])
+						elif lv[8] == 'upsampled_loss' :
+							trnUpLoss.append(lv[10])
+					elif lv[4] == 'Test' :
+						if lv[8] == 'loss' :
+							tstLoss.append(lv[10])
+						elif lv[8] == 'upsampled_loss' :
+							tstUpLoss.append(lv[10])
+					# elif lv[4] == 'Iteration' :
+					# 	if lv[5] != trnIter[len(trnIter)-1] :
+					# 		trnIter.append(lv[5])
 				#end if
 	#end with
 
@@ -145,10 +146,10 @@ def drawLossPlots(fPrefix, trnIter, trnLoss, tstIter, tstLoss) :
 	if 'fuse' in fPrefix :
 		netType = 'Multi-Fuse'
 	elif 'single' in fPrefix :
-		netType = 'Non-Stero'
+		netType = 'Single-Image'
 	#end if
 
-	print(netType)
+#	print(netType)
 
 	# Draw the plot with both train & test
 	pName = fPrefix + '_both.png'
@@ -217,17 +218,17 @@ def extractFromLogFiles(path) :
 		trnIter, trnLoss, trnUpLoss, tstIter, tstLoss, tstUpLoss = parseLogFile(lfName)
 
 		# Call func to write loss stats to text file
-		sName = path + 'plots/' + netName + '.txt'
+		sName = path + 'stats/' + netName + '.txt'
 		saveStatsTextFile(sName, trnIter, trnLoss, trnUpLoss, tstIter, tstLoss, tstUpLoss)
 
 		# Call func to draw loss plots
-		imgPrefix = netName
-		drawLossPlots( (path + imgPrefix), trnIter, trnLoss, tstIter, tstLoss)
+		imgPrefix = path + 'plots/' + netName
+		drawLossPlots( imgPrefix, trnIter, trnLoss, tstIter, tstLoss)
 
 		# Call to draw upsampled loss if it was captured
 		if len(trnUpLoss) > 0 :
-			imgPrefix = netName + '_up'
-			drawLossPlots( (path + imgPrefix), trnIter, trnUpLoss, tstIter, tstUpLoss)
+			imgPrefix = imgPrefix + '_up'
+			drawLossPlots( imgPrefix, trnIter, trnUpLoss, tstIter, tstUpLoss)
 		#end if
 	#end for
 
