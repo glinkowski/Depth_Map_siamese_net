@@ -4,7 +4,7 @@ clear all; close all; dbstop error;
 %% Image creation & modification flags & parameters
 
 % Run test on small set of images
-doUseDemoData = true;
+doUseDemoData = false;
 
 % Which sets of images to create (will need all)
 doCreateLeftImages = true;
@@ -399,6 +399,7 @@ if doCreateGroundTruthImages
         [~, fname] = fileparts(files(index).name);
         sName = strcat(gt10Dir, fname, '.png');
         I = imread(sName);
+        Isize = size(I);
 
         if doDilateGroundTruth
             I = imdilate(I, dilator);
