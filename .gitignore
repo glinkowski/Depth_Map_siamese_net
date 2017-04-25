@@ -12,6 +12,10 @@ prepped_images/*
 convert_imageset
 demo_prepped_images/0*.png
 demo_prepped_images/m*.txt
+snapshots*/*
+demo_lmdb_files/*
+logs*/*
+*.png
 
 
 # Related Folders & Files #
