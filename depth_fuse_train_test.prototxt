@@ -176,9 +176,53 @@ layer {
   top: "conv1_L"
 }
 layer {
+  name: "conv1b_L"
+  type: "Convolution"
+  bottom: "conv1_L"
+  top: "conv1b_L"
+  param {
+    name: "conv1b_w"
+    lr_mult: 1
+  }
+  param {
+    name: "conv1b_b"
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 16
+    kernel_size: 7
+    pad: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "norm1b_L"
+  type: "LRN"
+  bottom: "conv1b_L"
+  top: "conv1_L"
+  lrn_param {
+    local_size: 5
+    alpha: 0.25
+    beta: 0.75
+    norm_region: WITHIN_CHANNEL
+  }
+}
+layer {
+  name: "relu1b_L"
+  type: "ReLU"
+  bottom: "conv1b_L"
+  top: "conv1b_L"
+}
+layer {
   name: "pool1_L"
   type: "Pooling"
-  bottom: "conv1_L"
+  bottom: "conv1b_L"
   top: "pool1_L"
   pooling_param {
     pool: MAX
@@ -233,9 +277,53 @@ layer {
   top: "conv1_R"
 }
 layer {
+  name: "conv1b_R"
+  type: "Convolution"
+  bottom: "conv1_R"
+  top: "conv1b_R"
+  param {
+    name: "conv1b_w"
+    lr_mult: 1
+  }
+  param {
+    name: "conv1b_b"
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 16
+    kernel_size: 7
+    pad: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "norm1b_R"
+  type: "LRN"
+  bottom: "conv1b_R"
+  top: "conv1_R"
+  lrn_param {
+    local_size: 5
+    alpha: 0.25
+    beta: 0.75
+    norm_region: WITHIN_CHANNEL
+  }
+}
+layer {
+  name: "relu1b_R"
+  type: "ReLU"
+  bottom: "conv1b_R"
+  top: "conv1b_R"
+}
+layer {
   name: "pool1_R"
   type: "Pooling"
-  bottom: "conv1_R"
+  bottom: "conv1b_R"
   top: "pool1_R"
   pooling_param {
     pool: MAX
