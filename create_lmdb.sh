@@ -67,6 +67,8 @@ rm -rf $TARGET/depth_train_GT_$BACKEND
 rm -rf $TARGET/depth_test_L_$BACKEND
 rm -rf $TARGET/depth_test_R_$BACKEND
 rm -rf $TARGET/depth_test_GT_$BACKEND
+rm -rf $TARGET/depth_deploy_L_$BACKEND
+rm -rf $TARGET/depth_deploy_R_$BACKEND
 
 
 
@@ -143,6 +145,32 @@ GLOG_logtostderr=1 $TOOLS/convert_imageset \
     $SOURCE \
     $SOURCE/manifestTestGT.txt \
     $TARGET/depth_test_GT_$BACKEND
+
+    
+echo "\nCreating deploy lmdb sets..."
+echo "    (one each: Left, Right, Ground Truth)\n"
+
+echo ""
+GLOG_logtostderr=1 $TOOLS/convert_imageset \
+    --backend=$BACKEND \
+    --resize_height=$RESIZE_HEIGHT \
+    --resize_width=$RESIZE_WIDTH \
+    --shuffle=false \
+    --gray=$GRAYSCALE \
+    $SOURCE \
+    $SOURCE/manifestDeployL.txt \
+    $TARGET/depth_deploy_L_$BACKEND
+
+echo ""
+GLOG_logtostderr=1 $TOOLS/convert_imageset \
+    --backend=$BACKEND \
+    --resize_height=$RESIZE_HEIGHT \
+    --resize_width=$RESIZE_WIDTH \
+    --shuffle=false \
+    --gray=$GRAYSCALE \
+    $SOURCE \
+    $SOURCE/manifestDeployR.txt \
+    $TARGET/depth_deploy_R_$BACKEND
 
 
 
