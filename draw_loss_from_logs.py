@@ -36,13 +36,12 @@ def parseLogFile(fname) :
 	# The items to return:
 	#	train & test iterations, train & test loss
 	#	(and upsampled loss if exists)
-	trnIter = list()
+	trnIter = list([0])
 	trnLoss = list()
 	trnUpLoss = list()
-	tstIter = list()
+	tstIter = list([0])
 	tstLoss = list()
 	tstUpLoss = list()
-
 
 	with open(fname, 'r') as fin :
 		for line in fin :
@@ -53,36 +52,31 @@ def parseLogFile(fname) :
 			else :
 				lv = line.split()
 
-				# Append the iteration, loss, and optional upsampled_loss
-				if lv[4] == 'Train' :
-					if lv[8] == 'loss' :
-						trnLoss.append(lv[10])
-					elif lv[8] == 'upsampled_loss' :
-						trnUpLoss.append(lv[10])
-				elif lv[4] == 'Test' :
-					if lv[8] == 'loss' :
-						tstLoss.append(lv[10])
-					elif lv[8] == 'upsampled_loss' :
-						tstUpLoss.append(lv[10])
-				# elif lv[4] == 'Iteration' :
-				# 	if lv[5] != trnIter[len(trnIter)-1] :
-				# 		trnIter.append(lv[5])
+				if len(lv) > 10 :
+					# Append the iteration, loss, and optional upsampled_loss
+					if lv[4] == 'Train' :
+						if lv[8] == 'loss' :
+							trnLoss.append( float(lv[10]) )
+						elif lv[8] == 'upsampled_loss' :
+							trnUpLoss.append( float(lv[10]) )
+					elif lv[4] == 'Test' :
+						if lv[8] == 'loss' :
+							tstLoss.append( float(lv[10]) )
+						elif lv[8] == 'upsampled_loss' :
+							tstUpLoss.append( float(lv[10]) )
+					elif lv[4] == 'Iteration' :
+						if float(lv[5]) != trnIter[-1] :
+							trnIter.append( float(lv[5]) )
 				#end if
 	#end with
 
-	# Manually fill in test iterations using tstGap
-	nextIter = 0
-	for i in range(len(tstLoss)) :
-		tstIter.append(nextIter)
-		nextIter += tstGap
-	#end for
+	if (len(trnIter) > 1) and (len(tstLoss) > 1) :
+		finIter = int(trnIter[-1])
+		tstIter = list(range( 0, finIter + 1, finIter/(len(tstLoss) - 1) ))
+	#end if
 
-	# Manually fill in train iterations using trnGap
-	nextIter = 0
-	for i in range(len(trnLoss)) :
-		trnIter.append(nextIter)
-		nextIter += trnGap
-	#end for
+	if len(trnLoss) == 0 :
+		trnIter = list()
 
 	return trnIter, trnLoss, trnUpLoss, tstIter, tstLoss, tstUpLoss
 #end def ######## ######## ######## 
@@ -145,10 +139,10 @@ def drawLossPlots(fPrefix, trnIter, trnLoss, tstIter, tstLoss) :
 	if 'fuse' in fPrefix :
 		netType = 'Multi-Fuse'
 	elif 'single' in fPrefix :
-		netType = 'Non-Stero'
+		netType = 'Single-Image'
 	#end if
 
-	print(netType)
+#	print(netType)
 
 	# Draw the plot with both train & test
 	pName = fPrefix + '_both.png'
@@ -217,17 +211,17 @@ def extractFromLogFiles(path) :
 		trnIter, trnLoss, trnUpLoss, tstIter, tstLoss, tstUpLoss = parseLogFile(lfName)
 
 		# Call func to write loss stats to text file
-		sName = path + netName + '.txt'
+		sName = path + 'stats/' + netName + '.txt'
 		saveStatsTextFile(sName, trnIter, trnLoss, trnUpLoss, tstIter, tstLoss, tstUpLoss)
 
 		# Call func to draw loss plots
-		imgPrefix = netName
-		drawLossPlots( (path + imgPrefix), trnIter, trnLoss, tstIter, tstLoss)
+		imgPrefix = path + 'plots/' + netName
+		drawLossPlots( imgPrefix, trnIter, trnLoss, tstIter, tstLoss)
 
 		# Call to draw upsampled loss if it was captured
 		if len(trnUpLoss) > 0 :
-			imgPrefix = netName + '_up'
-			drawLossPlots( (path + imgPrefix), trnIter, trnUpLoss, tstIter, tstUpLoss)
+			imgPrefix = imgPrefix + '_up'
+			drawLossPlots( imgPrefix, trnIter, trnUpLoss, tstIter, tstUpLoss)
 		#end if
 	#end for
 

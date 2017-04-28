@@ -1,136 +1,43 @@
-name: "depth_fuse"
+name: "depth_siamese_deploy"
 
 
 ######################################
 #### LOAD DATA: 3 training images ####
 ######################################
 layer {
-  name: "LTrain_data"
-  type: "Data"
+  name: "L_data"
+  type: "Input"
   top: "L_data"
-  top: "L_junk_label"
-  include {
-    phase: TRAIN
-  }
-  transform_param {
-  }
-  data_param {
-    source: "lmdb_files/depth_train_L_lmdb"
-    batch_size: 5
-    backend: LMDB
+  input_param {
+    shape: {
+      dim: 1
+      dim: 1
+      dim: 64
+      dim: 128
+    }
   }
 }
 layer {
-  name: "RTrain_data"
-  type: "Data"
+  name: "R_data"
+  type: "Input"
   top: "R_data"
-  top: "R_junk_label"
-  include {
-    phase: TRAIN
+  input_param {
+    shape: {
+      dim: 1
+      dim: 1
+      dim: 64
+      dim: 128
+    }
   }
-  transform_param {
-  }
-  data_param {
-    source: "lmdb_files/depth_train_R_lmdb"
-    batch_size: 5
-    backend: LMDB
-  }
-}
-layer {
-  name: "GTTrain_data"
-  type: "Data"
-  top: "GT_data"
-  top: "GT_junk_label"
-  include {
-    phase: TRAIN
-  }
-  transform_param {
-  }
-  data_param {
-    source: "lmdb_files/depth_train_GT_lmdb"
-    batch_size: 5
-    backend: LMDB
-  }
-}
-
-
-######################################
-#### LOAD DATA: 3 testing images  ####
-######################################
-layer {
-  name: "LTest_data"
-  type: "Data"
-  top: "L_data"
-  top: "L_junk_label"
-  include {
-    phase: TEST
-  }
-  transform_param {
-  }
-  data_param {
-    source: "lmdb_files/depth_test_L_lmdb"
-    batch_size: 5
-    backend: LMDB
-  }
-}
-layer {
-  name: "RTest_data"
-  type: "Data"
-  top: "R_data"
-  top: "R_junk_label"
-  include {
-    phase: TEST
-  }
-  transform_param {
-  }
-  data_param {
-    source: "lmdb_files/depth_test_R_lmdb"
-    batch_size: 5
-    backend: LMDB
-  }
-}
-layer {
-  name: "GTTest_data"
-  type: "Data"
-  top: "GT_data"
-  top: "GT_junk_label"
-  include {
-    phase: TEST
-  }
-  transform_param {
-  }
-  data_param {
-    source: "lmdb_files/depth_test_GT_lmdb"
-    batch_size: 5
-    backend: LMDB
-  }
-}
-
-
-######################################
-#### SILENCE OUTPUT: fake labels  ####
-######################################
-layer {
-  name: "stfu_L"
-  type: "Silence"
-  bottom: "L_junk_label"
-}
-layer {
-  name: "stfu_R"
-  type: "Silence"
-  bottom: "R_junk_label"
-}
-layer {
-  name: "stfu_GT"
-  type: "Silence"
-  bottom: "GT_junk_label"
 }
 
 
 ######################################
 #### STEP 1: initial conv         ####
-####    out: 64 x 128             ####
+####    out: 32 x 64 x 8          ####
 ######################################
+
+#### Left Leg  #######################
 layer {
   name: "conv1_L"
   type: "Convolution"
@@ -158,6 +65,12 @@ layer {
   }
 }
 layer {
+  name: "relu1_L"
+  type: "ReLU"
+  bottom: "conv1_L"
+  top: "conv1_L"
+}
+layer {
   name: "norm1_L"
   type: "LRN"
   bottom: "conv1_L"
@@ -168,12 +81,6 @@ layer {
     beta: 0.75
     norm_region: WITHIN_CHANNEL
   }
-}
-layer {
-  name: "relu1_L"
-  type: "ReLU"
-  bottom: "conv1_L"
-  top: "conv1_L"
 }
 layer {
   name: "conv1b_L"
@@ -189,7 +96,7 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 16
+    num_output: 8
     kernel_size: 7
     pad: 3
     stride: 1
@@ -200,6 +107,12 @@ layer {
       type: "constant"
     }
   }
+}
+layer {
+  name: "relu1b_L"
+  type: "ReLU"
+  bottom: "conv1b_L"
+  top: "conv1b_L"
 }
 layer {
   name: "norm1b_L"
@@ -214,12 +127,6 @@ layer {
   }
 }
 layer {
-  name: "relu1b_L"
-  type: "ReLU"
-  bottom: "conv1b_L"
-  top: "conv1b_L"
-}
-layer {
   name: "pool1_L"
   type: "Pooling"
   bottom: "conv1b_L"
@@ -231,7 +138,7 @@ layer {
   }
 }
 
-
+#### Right Leg #######################
 layer {
   name: "conv1_R"
   type: "Convolution"
@@ -259,6 +166,12 @@ layer {
   }
 }
 layer {
+  name: "relu1_R"
+  type: "ReLU"
+  bottom: "conv1_R"
+  top: "conv1_R"
+}
+layer {
   name: "norm1_R"
   type: "LRN"
   bottom: "conv1_R"
@@ -269,12 +182,6 @@ layer {
     beta: 0.75
     norm_region: WITHIN_CHANNEL
   }
-}
-layer {
-  name: "relu1_R"
-  type: "ReLU"
-  bottom: "conv1_R"
-  top: "conv1_R"
 }
 layer {
   name: "conv1b_R"
@@ -290,7 +197,7 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 16
+    num_output: 8
     kernel_size: 7
     pad: 3
     stride: 1
@@ -303,6 +210,12 @@ layer {
   }
 }
 layer {
+  name: "relu1b_R"
+  type: "ReLU"
+  bottom: "conv1b_R"
+  top: "conv1b_R"
+}
+layer {
   name: "norm1b_R"
   type: "LRN"
   bottom: "conv1b_R"
@@ -313,12 +226,6 @@ layer {
     beta: 0.75
     norm_region: WITHIN_CHANNEL
   }
-}
-layer {
-  name: "relu1b_R"
-  type: "ReLU"
-  bottom: "conv1b_R"
-  top: "conv1b_R"
 }
 layer {
   name: "pool1_R"
@@ -334,10 +241,11 @@ layer {
 
 
 ######################################
-#### STEP 2a: conv 2              ####
-####    out: 32 x 64              ####
+#### STEP 2: conv set 2           ####
+####    out: 16 x 32 x 64         ####
 ######################################
 
+#### Left Leg  #######################
 layer {
   name: "conv2_L"
   type: "Convolution"
@@ -352,7 +260,7 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 16
+    num_output: 64
     kernel_size: 5
     pad: 2
     stride: 1
@@ -363,6 +271,12 @@ layer {
       type: "constant"
     }
   }
+}
+layer {
+  name: "relu2_L"
+  type: "ReLU"
+  bottom: "conv2_L"
+  top: "conv2_L"
 }
 layer {
   name: "norm2_L"
@@ -377,12 +291,62 @@ layer {
   }
 }
 layer {
-  name: "relu2_L"
-  type: "ReLU"
+  name: "conv2b_L"
+  type: "Convolution"
   bottom: "conv2_L"
-  top: "conv2_L"
+  top: "conv2b_L"
+  param {
+    name: "conv2b_w"
+    lr_mult: 1
+  }
+  param {
+    name: "conv2b_b"
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 64
+    kernel_size: 5
+    pad: 2
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "relu2b_L"
+  type: "ReLU"
+  bottom: "conv2b_L"
+  top: "conv2b_L"
+}
+layer {
+  name: "norm2b_L"
+  type: "LRN"
+  bottom: "conv2b_L"
+  top: "conv2b_L"
+  lrn_param {
+    local_size: 5
+    alpha: 0.25
+    beta: 0.75
+    norm_region: WITHIN_CHANNEL
+  }
+}
+layer {
+  name: "pool2_L"
+  type: "Pooling"
+  bottom: "conv2b_L"
+  top: "pool2_L"
+  pooling_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+  }
 }
 
+#### Right Leg #######################
 layer {
   name: "conv2_R"
   type: "Convolution"
@@ -397,7 +361,7 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 16
+    num_output: 64
     kernel_size: 5
     pad: 2
     stride: 1
@@ -408,6 +372,12 @@ layer {
       type: "constant"
     }
   }
+}
+layer {
+  name: "relu2_R"
+  type: "ReLU"
+  bottom: "conv2_R"
+  top: "conv2_R"
 }
 layer {
   name: "norm2_R"
@@ -422,85 +392,20 @@ layer {
   }
 }
 layer {
-  name: "relu2_R"
-  type: "ReLU"
-  bottom: "conv2_R"
-  top: "conv2_R"
-}
-
-
-######################################
-#### STEP 2b: fuse                ####
-####    out: 32 x 64 x 1          ####
-######################################
-
-layer {
-  name: "fuse2"
-  type: "Concat"
-  bottom: "conv2_L"
-  bottom: "conv2_R"
-  top: "fuse2"
-  concat_param {
-    axis: 1
-  }
-}
-layer {
-  name: "fullCnct2"
-  type: "InnerProduct"
-  bottom: "fuse2"
-  top: "fc2"
-  inner_product_param {
-    num_output: 2048
-    weight_filler {
-      type: "xavier"
-    }
-    bias_filler {
-      type: "constant"
-    }
-  }
-}
-layer {
-  name: "make2d2"
-  type: "Reshape"
-  bottom: "fc2"
-  top: "reshape2"
-  reshape_param {
-    shape {
-      dim: 0
-      dim: 1
-      dim: 32
-      dim: 64
-    }
-  }
-}
-layer {
-  name: "relu2_F"
-  type: "ReLU"
-  bottom: "reshape2"
-  top: "reshape2"
-}
-
-
-######################################
-#### STEP 3a: conv 3              ####
-####    out: 16 x 32 x 32         ####
-######################################
-
-layer {
-  name: "conv3_L"
+  name: "conv2b_R"
   type: "Convolution"
-  bottom: "reshape2"
-  top: "conv3_L"
+  bottom: "conv2_R"
+  top: "conv2b_R"
   param {
-    name: "conv3L_w"
+    name: "conv2b_w"
     lr_mult: 1
   }
   param {
-    name: "conv3L_b"
+    name: "conv2b_b"
     lr_mult: 2
   }
   convolution_param {
-    num_output: 16
+    num_output: 64
     kernel_size: 5
     pad: 2
     stride: 1
@@ -511,6 +416,75 @@ layer {
       type: "constant"
     }
   }
+}
+layer {
+  name: "relu2b_R"
+  type: "ReLU"
+  bottom: "conv2b_R"
+  top: "conv2b_R"
+}
+layer {
+  name: "norm2b_R"
+  type: "LRN"
+  bottom: "conv2b_R"
+  top: "conv2b_R"
+  lrn_param {
+    local_size: 5
+    alpha: 0.25
+    beta: 0.75
+    norm_region: WITHIN_CHANNEL
+  }
+}
+layer {
+  name: "pool2_R"
+  type: "Pooling"
+  bottom: "conv2b_R"
+  top: "pool2_R"
+  pooling_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+  }
+}
+
+
+######################################
+#### STEP 3: conv set 3           ####
+####    out: 8 x 16 x 64          ####
+######################################
+
+#### Left Leg  #######################
+layer {
+  name: "conv3_L"
+  type: "Convolution"
+  bottom: "pool2_L"
+  top: "conv3_L"
+  param {
+    name: "conv3_w"
+    lr_mult: 1
+  }
+  param {
+    name: "conv3_b"
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 64
+    kernel_size: 5
+    pad: 2
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "relu3_L"
+  type: "ReLU"
+  bottom: "conv3_L"
+  top: "conv3_L"
 }
 layer {
   name: "norm3_L"
@@ -525,26 +499,20 @@ layer {
   }
 }
 layer {
-  name: "relu3_L"
-  type: "ReLU"
-  bottom: "conv3_L"
-  top: "conv3_L"
-}
-layer {
   name: "conv3b_L"
   type: "Convolution"
   bottom: "conv3_L"
   top: "conv3b_L"
   param {
-    name: "conv3Lb_w"
+    name: "conv3b_w"
     lr_mult: 1
   }
   param {
-    name: "conv3Lb_b"
+    name: "conv3b_b"
     lr_mult: 2
   }
   convolution_param {
-    num_output: 16
+    num_output: 64
     kernel_size: 5
     pad: 2
     stride: 1
@@ -555,6 +523,12 @@ layer {
       type: "constant"
     }
   }
+}
+layer {
+  name: "relu3b_L"
+  type: "ReLU"
+  bottom: "conv3b_L"
+  top: "conv3b_L"
 }
 layer {
   name: "norm3b_L"
@@ -569,16 +543,10 @@ layer {
   }
 }
 layer {
-  name: "relu3b_L"
-  type: "ReLU"
-  bottom: "conv3b_L"
-  top: "conv3b_L"
-}
-layer {
-  name: "pool3b_L"
+  name: "pool3_L"
   type: "Pooling"
   bottom: "conv3b_L"
-  top: "pool3b_L"
+  top: "pool3_L"
   pooling_param {
     pool: MAX
     kernel_size: 2
@@ -586,10 +554,11 @@ layer {
   }
 }
 
+#### Right Leg #######################
 layer {
   name: "conv3_R"
   type: "Convolution"
-  bottom: "conv2_R"
+  bottom: "pool2_R"
   top: "conv3_R"
   param {
     name: "conv3_w"
@@ -600,7 +569,7 @@ layer {
     lr_mult: 2
   }
   convolution_param {
-    num_output: 16
+    num_output: 64
     kernel_size: 5
     pad: 2
     stride: 1
@@ -611,6 +580,12 @@ layer {
       type: "constant"
     }
   }
+}
+layer {
+  name: "relu3_R"
+  type: "ReLU"
+  bottom: "conv3_R"
+  top: "conv3_R"
 }
 layer {
   name: "norm3_R"
@@ -625,15 +600,53 @@ layer {
   }
 }
 layer {
-  name: "relu3_R"
-  type: "ReLU"
+  name: "conv3b_R"
+  type: "Convolution"
   bottom: "conv3_R"
-  top: "conv3_R"
+  top: "conv3b_R"
+  param {
+    name: "conv3b_w"
+    lr_mult: 1
+  }
+  param {
+    name: "conv3b_b"
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 64
+    kernel_size: 5
+    pad: 2
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "relu3b_R"
+  type: "ReLU"
+  bottom: "conv3b_R"
+  top: "conv3b_R"
+}
+layer {
+  name: "norm3b_R"
+  type: "LRN"
+  bottom: "conv3b_R"
+  top: "conv3b_R"
+  lrn_param {
+    local_size: 5
+    alpha: 0.25
+    beta: 0.75
+    norm_region: WITHIN_CHANNEL
+  }
 }
 layer {
   name: "pool3_R"
   type: "Pooling"
-  bottom: "conv3_R"
+  bottom: "conv3b_R"
   top: "pool3_R"
   pooling_param {
     pool: MAX
@@ -644,25 +657,16 @@ layer {
 
 
 ######################################
-#### STEP 3b: fuse                ####
-####    out: 16 x 32 x 6          ####
+#### STEP 4: full-conn w/ conv    ####
+####    out: 16 x 32 x 32         ####
 ######################################
 
+#### Left Leg  #######################
 layer {
-  name: "fuse3"
-  type: "Concat"
-  bottom: "pool3b_L"
-  bottom: "pool3_R"
-  top: "fuse3"
-  concat_param {
-    axis: 1
-  }
-}
-layer {
-  name: "fullCnct3"
+  name: "fc4_L"
   type: "InnerProduct"
-  bottom: "fuse3"
-  top: "fc3"
+  bottom: "pool3_L"
+  top: "fc4_L"
   inner_product_param {
     num_output: 4096
     weight_filler {
@@ -674,10 +678,10 @@ layer {
   }
 }
 layer {
-  name: "make2d3"
+  name: "make2d4_L"
   type: "Reshape"
-  bottom: "fc3"
-  top: "reshape3"
+  bottom: "fc4_L"
+  top: "reshape4_L"
   reshape_param {
     shape {
       dim: 0
@@ -688,44 +692,31 @@ layer {
   }
 }
 layer {
-  name: "relu3_F"
-  type: "ReLU"
-  bottom: "reshape3"
-  top: "reshape3"
-}
-layer {
-  name: "drop3_F"
+  name: "drop4_L"
   type: "Dropout"
-  bottom: "reshape3"
-  top: "reshape3"
+  bottom: "reshape4_L"
+  top: "reshape4_L"
   dropout_param {
-    dropout_ratio: 0.5
+    dropout_ratio: 0.3
   }
 }
-
-
-######################################
-#### STEP 4a: conv 4              ####
-####    out: 16 x 32 x 32         ####
-######################################
-
 layer {
   name: "conv4_L"
   type: "Convolution"
-  bottom: "reshape3"
+  bottom: "reshape4_L"
   top: "conv4_L"
   param {
-    name: "conv4L_w"
+    name: "conv4_w"
     lr_mult: 1
   }
   param {
-    name: "conv4L_b"
+    name: "conv4_b"
     lr_mult: 2
   }
   convolution_param {
     num_output: 32
-    kernel_size: 5
-    pad: 2
+    kernel_size: 3
+    pad: 1
     stride: 1
     weight_filler {
       type: "xavier"
@@ -734,6 +725,12 @@ layer {
       type: "constant"
     }
   }
+}
+layer {
+  name: "relu4_L"
+  type: "ReLU"
+  bottom: "conv4_L"
+  top: "conv4_L"
 }
 layer {
   name: "norm4_L"
@@ -747,30 +744,15 @@ layer {
     norm_region: WITHIN_CHANNEL
   }
 }
+
+#### Right Leg #######################
 layer {
-  name: "relu4_L"
-  type: "ReLU"
-  bottom: "conv4_L"
-  top: "conv4_L"
-}
-layer {
-  name: "conv4b_L"
-  type: "Convolution"
-  bottom: "conv4_L"
-  top: "conv4b_L"
-  param {
-    name: "conv4Lb_w"
-    lr_mult: 1
-  }
-  param {
-    name: "conv4Lb_b"
-    lr_mult: 2
-  }
-  convolution_param {
-    num_output: 32
-    kernel_size: 5
-    pad: 2
-    stride: 1
+  name: "fc4_R"
+  type: "InnerProduct"
+  bottom: "pool3_R"
+  top: "fc4_R"
+  inner_product_param {
+    num_output: 4096
     weight_filler {
       type: "xavier"
     }
@@ -780,28 +762,32 @@ layer {
   }
 }
 layer {
-  name: "norm4b_L"
-  type: "LRN"
-  bottom: "conv4b_L"
-  top: "conv4b_L"
-  lrn_param {
-    local_size: 5
-    alpha: 0.25
-    beta: 0.75
-    norm_region: WITHIN_CHANNEL
+  name: "make2d4_R"
+  type: "Reshape"
+  bottom: "fc4_R"
+  top: "reshape4_R"
+  reshape_param {
+    shape {
+      dim: 0
+      dim: 8
+      dim: 16
+      dim: 32
+    }
   }
 }
 layer {
-  name: "relu4b_L"
-  type: "ReLU"
-  bottom: "conv4b_L"
-  top: "conv4b_L"
+  name: "drop4_R"
+  type: "Dropout"
+  bottom: "reshape4_R"
+  top: "reshape4_R"
+  dropout_param {
+    dropout_ratio: 0.3
+  }
 }
-
 layer {
   name: "conv4_R"
   type: "Convolution"
-  bottom: "pool3_R"
+  bottom: "reshape4_R"
   top: "conv4_R"
   param {
     name: "conv4_w"
@@ -813,8 +799,8 @@ layer {
   }
   convolution_param {
     num_output: 32
-    kernel_size: 5
-    pad: 2
+    kernel_size: 3
+    pad: 1
     stride: 1
     weight_filler {
       type: "xavier"
@@ -823,6 +809,12 @@ layer {
       type: "constant"
     }
   }
+}
+layer {
+  name: "relu4_R"
+  type: "ReLU"
+  bottom: "conv4_R"
+  top: "conv4_R"
 }
 layer {
   name: "norm4_R"
@@ -836,34 +828,113 @@ layer {
     norm_region: WITHIN_CHANNEL
   }
 }
+
+
+######################################
+#### STEP 5: fully-connecteds     ####
+####    out: 16 x 32 x 32         ####
+######################################
+
+#### Left Leg  #######################
 layer {
-  name: "relu4_R"
-  type: "ReLU"
+  name: "fc5_L"
+  type: "InnerProduct"
+  bottom: "conv4_L"
+  top: "fc5_L"
+  inner_product_param {
+    num_output: 4096
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "make2d5_L"
+  type: "Reshape"
+  bottom: "fc5_L"
+  top: "reshape5_L"
+  reshape_param {
+    shape {
+      dim: 0
+      dim: 8
+      dim: 16
+      dim: 32
+    }
+  }
+}
+layer {
+  name: "drop5_L"
+  type: "Dropout"
+  bottom: "reshape5_L"
+  top: "reshape5_L"
+  dropout_param {
+    dropout_ratio: 0.3
+  }
+}
+
+#### Right Leg #######################
+layer {
+  name: "fc5_R"
+  type: "InnerProduct"
   bottom: "conv4_R"
-  top: "conv4_R"
+  top: "fc5_R"
+  inner_product_param {
+    num_output: 4096
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "make2d5_R"
+  type: "Reshape"
+  bottom: "fc5_R"
+  top: "reshape5_R"
+  reshape_param {
+    shape {
+      dim: 0
+      dim: 8
+      dim: 16
+      dim: 32
+    }
+  }
+}
+layer {
+  name: "drop5_R"
+  type: "Dropout"
+  bottom: "reshape5_R"
+  top: "reshape5_R"
+  dropout_param {
+    dropout_ratio: 0.3
+  }
 }
 
 
 ######################################
-#### STEP 4b: fuse                ####
+#### STEP 6: join R & L legs      ####
 ####    out: 32 x 64 x 1          ####
 ######################################
-
 layer {
-  name: "fuse4"
+  name: "joint_concat"
   type: "Concat"
-  bottom: "conv4b_L"
-  bottom: "conv4_R"
-  top: "fuse4"
+  bottom: "reshape5_L"
+  bottom: "reshape5_R"
+  top: "joint_concat"
   concat_param {
     axis: 1
   }
 }
 layer {
-  name: "fullCnct4"
+  name: "joint_fc"
   type: "InnerProduct"
-  bottom: "fuse4"
-  top: "fc4"
+  bottom: "joint_concat"
+  top: "joint_fc"
   inner_product_param {
     num_output: 2048
     weight_filler {
@@ -875,10 +946,10 @@ layer {
   }
 }
 layer {
-  name: "make2d4"
+  name: "joint_make2d"
   type: "Reshape"
-  bottom: "fc4"
-  top: "reshape4"
+  bottom: "joint_fc"
+  top: "joint_reshape"
   reshape_param {
     shape {
       dim: 0
@@ -891,13 +962,13 @@ layer {
 
 
 ######################################
-#### STEP 5: upsample             ####
-####    out: 32 x 64 x 1          ####
+#### STEP 7: join R & L legs      ####
+####    out: 64 x 128 x 1         ####
 ######################################
 layer {
-  name: "upsample"
+  name: "joint_upsample"
   type: "Deconvolution"
-  bottom: "reshape4"
+  bottom: "joint_reshape"
   top: "joint_upsamp"
   convolution_param{
     kernel_size: 4
@@ -914,47 +985,4 @@ layer {
      lr_mult: 0
     decay_mult: 0
   }
-}
-
-
-######################################
-#### STEP 6: loss                 ####
-####    out: 1                    ####
-######################################
-layer {
-  name: "loss"
-  type: "EuclideanLoss"
-  bottom: "joint_upsamp"
-  bottom: "GT_data"
-  top: "upsampled_loss"
-}
-
-
-######################################
-#### STEP 5 alt: downsample GT    ####
-####    out: 32 x 64 x 1          ####
-######################################
-layer {
-  name: "pool1_GT"
-  type: "Pooling"
-  bottom: "GT_data"
-  top: "pool1_GT"
-  pooling_param {
-    pool: MAX
-    kernel_size: 2
-    stride: 2
-  }
-}
-
-
-######################################
-#### STEP 6 alt: loss             ####
-####    out: 1                    ####
-######################################
-layer {
-  name: "loss_alt"
-  type: "EuclideanLoss"
-  bottom: "reshape4"
-  bottom: "pool1_GT"
-  top: "loss"
 }
