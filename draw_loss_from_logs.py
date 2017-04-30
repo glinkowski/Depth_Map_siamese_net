@@ -72,6 +72,8 @@ def parseLogFile(fname) :
 				#end if
 	#end with
 
+#	print(trnIter, trnLoss, tstIter, tstLoss)
+
 	# Manually fill in test iterations using tstGap
 	nextIter = 0
 	for i in range(len(tstLoss)) :
