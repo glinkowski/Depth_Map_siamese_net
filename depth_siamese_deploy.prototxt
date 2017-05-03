@@ -41,13 +41,14 @@ layer {
   top: "L_data"
   top: "L_junk_label"
   include {
-    phase: TRAIN
+    phase: TEST
   }
   transform_param {
+    scale: 0.00390625
   }
   data_param {
     source: "lmdb_files/depth_deploy_L_lmdb"
-    batch_size: 10
+    batch_size: 1
     backend: LMDB
   }
 }
@@ -55,17 +56,33 @@ layer {
   name: "RTrain_data"
   type: "Data"
   top: "R_data"
-  top: "R_junk_label"
   include {
-    phase: TRAIN
+    phase: TEST
   }
+  top: "R_junk_label"
   transform_param {
+    scale: 0.00390625
   }
   data_param {
     source: "lmdb_files/depth_deploy_R_lmdb"
-    batch_size: 10
+    batch_size: 1
     backend: LMDB
   }
+}
+
+
+######################################
+#### SILENCE OUTPUT: fake labels  ####
+######################################
+layer {
+  name: "stfu_L"
+  type: "Silence"
+  bottom: "L_junk_label"
+}
+layer {
+  name: "stfu_R"
+  type: "Silence"
+  bottom: "R_junk_label"
 }
 
 
