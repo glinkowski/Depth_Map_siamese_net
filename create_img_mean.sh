@@ -11,5 +11,22 @@ $TOOLS/compute_image_mean $DIR/depth_deploy_L_lmdb \
   $DIR/depth_deploy_L_mean.binaryproto
 $TOOLS/compute_image_mean $DIR/depth_deploy_R_lmdb \
   $DIR/depth_deploy_R_mean.binaryproto
+$TOOLS/compute_image_mean $DIR/depth_deploy_GT_lmdb \
+  $DIR/depth_deploy_GT_mean.binaryproto
 
+$TOOLS/compute_image_mean $DIR/depth_train_L_lmdb \
+  $DIR/depth_train_L_mean.binaryproto
+$TOOLS/compute_image_mean $DIR/depth_train_R_lmdb \
+  $DIR/depth_train_R_mean.binaryproto
+$TOOLS/compute_image_mean $DIR/depth_train_GT_lmdb \
+  $DIR/depth_train_GT_mean.binaryproto
+
+$TOOLS/compute_image_mean $DIR/depth_test_L_lmdb \
+  $DIR/depth_test_L_mean.binaryproto
+$TOOLS/compute_image_mean $DIR/depth_test_R_lmdb \
+  $DIR/depth_test_R_mean.binaryproto
+$TOOLS/compute_image_mean $DIR/depth_test_GT_lmdb \
+  $DIR/depth_test_GT_mean.binaryproto
+
+  
 echo "Done."
