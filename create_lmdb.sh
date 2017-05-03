@@ -20,7 +20,7 @@ BACKEND="lmdb"
 
 # Set RESIZE=true to resize the images to 256x512. Leave as false if images have
 # already been resized using another tool.
-RESIZE=true
+RESIZE=false
 if $RESIZE; then
 #  RESIZE_HEIGHT=256
 #  RESIZE_WIDTH=512
@@ -69,6 +69,7 @@ rm -rf $TARGET/depth_test_R_$BACKEND
 rm -rf $TARGET/depth_test_GT_$BACKEND
 rm -rf $TARGET/depth_deploy_L_$BACKEND
 rm -rf $TARGET/depth_deploy_R_$BACKEND
+rm -rf $TARGET/depth_deploy_GT_$BACKEND
 
 
 
@@ -171,6 +172,17 @@ GLOG_logtostderr=1 $TOOLS/convert_imageset \
     $SOURCE \
     $SOURCE/manifestDeployR.txt \
     $TARGET/depth_deploy_R_$BACKEND
+
+echo ""
+GLOG_logtostderr=1 $TOOLS/convert_imageset \
+    --backend=$BACKEND \
+    --resize_height=$RESIZE_HEIGHT \
+    --resize_width=$RESIZE_WIDTH \
+    --shuffle=false \
+    --gray=$GRAYSCALE \
+    $SOURCE \
+    $SOURCE/manifestDeployGT.txt \
+    $TARGET/depth_deploy_GT_$BACKEND
 
 
 
