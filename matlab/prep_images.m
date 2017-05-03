@@ -22,6 +22,11 @@ doFlipImages = true;
 % Convert the color training images to grayscale
 doUseGrayscale = true;
 
+% Downsample the images
+doResize = true;
+resizH = 128;
+resizW = 2 * resizH;
+
 % Shuffle the order of the images in the manifest files
 doShuffle = true;
 
@@ -96,6 +101,13 @@ if doCreateLeftImages
         IL = I( (Isize(1)-cropH+1):Isize(1), 1:cropW, :);
         IC = I( (Isize(1)-cropH+1):Isize(1), cropL:cropR, :);
         IR = I( (Isize(1)-cropH+1):Isize(1), (Isize(2)-cropW+1):Isize(2), :);
+                
+        if doResize
+            IL = imresize(IL, [resizH, resizW]);
+            IC = imresize(IC, [resizH, resizW]);
+            IR = imresize(IR, [resizH, resizW]);
+        end
+        
         imwrite(IL, strcat(outDir, num2str(newIdx, '%05d'), 'L.png'));
         imwrite(IC, strcat(outDir, num2str(newIdx+1, '%05d'), 'L.png'));
         imwrite(IR, strcat(outDir, num2str(newIdx+2, '%05d'), 'L.png'));
@@ -152,6 +164,13 @@ if doCreateRightImages
         IL = I( (Isize(1)-cropH+1):Isize(1), 1:cropW, :);
         IC = I( (Isize(1)-cropH+1):Isize(1), cropL:cropR, :);
         IR = I( (Isize(1)-cropH+1):Isize(1), (Isize(2)-cropW+1):Isize(2), :);
+                
+        if doResize
+            IL = imresize(IL, [resizH, resizW]);
+            IC = imresize(IC, [resizH, resizW]);
+            IR = imresize(IR, [resizH, resizW]);
+        end
+        
         imwrite(IL, strcat(outDir, num2str(newIdx, '%05d'), 'R.png'));
         imwrite(IC, strcat(outDir, num2str(newIdx+1, '%05d'), 'R.png'));
         imwrite(IR, strcat(outDir, num2str(newIdx+2, '%05d'), 'R.png'));
@@ -203,6 +222,13 @@ if doCreateGroundTruthImages
         IL = I( (Isize(1)-cropH+1):Isize(1), 1:cropW, :);
         IC = I( (Isize(1)-cropH+1):Isize(1), cropL:cropR, :);
         IR = I( (Isize(1)-cropH+1):Isize(1), (Isize(2)-cropW+1):Isize(2), :);
+                
+        if doResize
+            IL = imresize(IL, [resizH, resizW]);
+            IC = imresize(IC, [resizH, resizW]);
+            IR = imresize(IR, [resizH, resizW]);
+        end
+        
         imwrite(IL, strcat(outDir, num2str(newIdx, '%05d'), 'GT.png'));
         imwrite(IC, strcat(outDir, num2str(newIdx+1, '%05d'), 'GT.png'));
         imwrite(IR, strcat(outDir, num2str(newIdx+2, '%05d'), 'GT.png'));
@@ -305,6 +331,13 @@ if doCreateLeftImages
         IL = I( (Isize(1)-cropH+1):Isize(1), 1:cropW, :);
         IC = I( (Isize(1)-cropH+1):Isize(1), cropL:cropR, :);
         IR = I( (Isize(1)-cropH+1):Isize(1), (Isize(2)-cropW+1):Isize(2), :);
+                
+        if doResize
+            IL = imresize(IL, [resizH, resizW]);
+            IC = imresize(IC, [resizH, resizW]);
+            IR = imresize(IR, [resizH, resizW]);
+        end
+        
         imwrite(IL, strcat(outDir, num2str(newIdx, '%05d'), 'L.png'));
         imwrite(IC, strcat(outDir, num2str(newIdx+1, '%05d'), 'L.png'));
         imwrite(IR, strcat(outDir, num2str(newIdx+2, '%05d'), 'L.png'));
@@ -370,6 +403,13 @@ if doCreateRightImages
         IL = I( (Isize(1)-cropH+1):Isize(1), 1:cropW, :);
         IC = I( (Isize(1)-cropH+1):Isize(1), cropL:cropR, :);
         IR = I( (Isize(1)-cropH+1):Isize(1), (Isize(2)-cropW+1):Isize(2), :);
+                
+        if doResize
+            IL = imresize(IL, [resizH, resizW]);
+            IC = imresize(IC, [resizH, resizW]);
+            IR = imresize(IR, [resizH, resizW]);
+        end
+        
         imwrite(IL, strcat(outDir, num2str(newIdx, '%05d'), 'R.png'));
         imwrite(IC, strcat(outDir, num2str(newIdx+1, '%05d'), 'R.png'));
         imwrite(IR, strcat(outDir, num2str(newIdx+2, '%05d'), 'R.png'));
@@ -427,6 +467,13 @@ if doCreateGroundTruthImages
         IL = I( (Isize(1)-cropH+1):Isize(1), 1:cropW, :);
         IC = I( (Isize(1)-cropH+1):Isize(1), cropL:cropR, :);
         IR = I( (Isize(1)-cropH+1):Isize(1), (Isize(2)-cropW+1):Isize(2), :);
+                
+        if doResize
+            IL = imresize(IL, [resizH, resizW]);
+            IC = imresize(IC, [resizH, resizW]);
+            IR = imresize(IR, [resizH, resizW]);
+        end
+        
         imwrite(IL, strcat(outDir, num2str(newIdx, '%05d'), 'GT.png'));
         imwrite(IC, strcat(outDir, num2str(newIdx+1, '%05d'), 'GT.png'));
         imwrite(IR, strcat(outDir, num2str(newIdx+2, '%05d'), 'GT.png'));
