@@ -13,6 +13,8 @@ layer {
     phase: TRAIN
   }
   transform_param {
+    scale: 0.00390625
+    mean_file: "lmdb_files/depth_train_L_mean.binaryproto"
   }
   data_param {
     source: "lmdb_files/depth_train_L_lmdb"
@@ -29,6 +31,8 @@ layer {
     phase: TRAIN
   }
   transform_param {
+    scale: 0.00390625
+    mean_file: "lmdb_files/depth_train_GT_mean.binaryproto"
   }
   data_param {
     source: "lmdb_files/depth_train_GT_lmdb"
@@ -39,7 +43,7 @@ layer {
 
 
 ######################################
-#### LOAD DATA: 3 testing images  ####
+#### LOAD DATA: 2 testing images  ####
 ######################################
 layer {
   name: "LTest_data"
@@ -50,6 +54,8 @@ layer {
     phase: TEST
   }
   transform_param {
+    scale: 0.00390625
+    mean_file: "lmdb_files/depth_test_L_mean.binaryproto"
   }
   data_param {
     source: "lmdb_files/depth_test_L_lmdb"
@@ -66,6 +72,8 @@ layer {
     phase: TEST
   }
   transform_param {
+    scale: 0.00390625
+    mean_file: "lmdb_files/depth_test_GT_mean.binaryproto"
   }
   data_param {
     source: "lmdb_files/depth_test_GT_lmdb"

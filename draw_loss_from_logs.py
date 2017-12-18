@@ -9,6 +9,7 @@
 
 import matplotlib.pyplot as plt
 import os
+import numpy as np
 
 
 
@@ -75,8 +76,11 @@ def parseLogFile(fname) :
 		tstIter = list(range( 0, finIter + 1, finIter/(len(tstLoss) - 1) ))
 	#end if
 
+	# Catch for badly formatted log file (ie: premature exit / error)
 	if len(trnLoss) == 0 :
 		trnIter = list()
+	if len(tstLoss) == 0 :
+		tstIter = list()
 
 	return trnIter, trnLoss, trnUpLoss, tstIter, tstLoss, tstUpLoss
 #end def ######## ######## ######## 
@@ -149,39 +153,69 @@ def drawLossPlots(fPrefix, trnIter, trnLoss, tstIter, tstLoss) :
 
 	fig = plt.figure()
 
-	plt.plot(trnIter, trnLoss, tstIter, tstLoss)
-	plt.xlabel('Euclidian Loss')
-	plt.ylabel('Iterations')
 
-	plt.title('Train/Test Loss for {}'.format(netType))
-	plt.savefig(pName)
-	plt.close()
+	print(len(trnIter), len(trnLoss), len(tstIter), len(tstLoss))
+	
+	if (len(trnLoss) == (4 * len(trnIter))) and (len(trnIter) != 0) :
 
-	# Draw the plot with both train & test
-	pName = fPrefix + '_onlyTrain.png'
+		meanTrnLoss = list()
+		meanTstLoss = list()
+		for i in range(len(trnIter)) :
+			meanTrnLoss.append( 0.25*np.sum(trnLoss[i*4:(i*4)+4]) )
+		#end for
+		for i in range(len(tstIter)) :
+			meanTstLoss.append( 0.25*np.sum(tstLoss[i*4:(i*4)+4]) )
+		#end for
 
-	fig = plt.figure()
+		if len(meanTrnLoss) == 0 :
+			meanTrnLoss.append(0)
+		if len(meanTstLoss) == 0 :
+			meanTstLoss.append(0)
 
-	plt.plot(trnIter, trnLoss)
-	plt.xlabel('Euclidian Loss')
-	plt.ylabel('Iterations')
+		plt.plot(trnIter, meanTrnLoss, tstIter, meanTstLoss)
+		plt.xlabel('Euclidian Loss')
+		plt.ylabel('Iterations')
 
-	plt.title('Train Loss for {}'.format(netType))
-	plt.savefig(pName)
-	plt.close()
+		plt.title('Train/Test Loss for {}'.format(netType))
+		plt.savefig(pName)
+		plt.close()
 
-	# Draw the plot with both train & test
-	pName = fPrefix + '_onlyTest.png'
+	else :
 
-	fig = plt.figure()
+		plt.plot(trnIter, trnLoss, tstIter, tstLoss)
+		plt.xlabel('Euclidian Loss')
+		plt.ylabel('Iterations')
 
-	plt.plot(tstIter, tstLoss)
-	plt.xlabel('Euclidian Loss')
-	plt.ylabel('Iterations')
+		plt.title('Train/Test Loss for {}'.format(netType))
+		plt.savefig(pName)
+		plt.close()
 
-	plt.title('Test Loss for {}'.format(netType))
-	plt.savefig(pName)
-	plt.close()
+		# Draw the plot with both train & test
+		pName = fPrefix + '_onlyTrain.png'
+
+		fig = plt.figure()
+
+		plt.plot(trnIter, trnLoss)
+		plt.xlabel('Euclidian Loss')
+		plt.ylabel('Iterations')
+
+		plt.title('Train Loss for {}'.format(netType))
+		plt.savefig(pName)
+		plt.close()
+
+		# Draw the plot with both train & test
+		pName = fPrefix + '_onlyTest.png'
+
+		fig = plt.figure()
+
+		plt.plot(tstIter, tstLoss)
+		plt.xlabel('Euclidian Loss')
+		plt.ylabel('Iterations')
+
+		plt.title('Test Loss for {}'.format(netType))
+		plt.savefig(pName)
+		plt.close()
+	#end if
 
 	return
 #end def ######## ######## ######## 
@@ -206,6 +240,8 @@ def extractFromLogFiles(path) :
 
 		netName = lf[0:-4]
 
+		print("drawing {}".format(lf))
+
 		# Call func to read the file
 		lfName = path + lf
 		trnIter, trnLoss, trnUpLoss, tstIter, tstLoss, tstUpLoss = parseLogFile(lfName)
@@ -218,11 +254,11 @@ def extractFromLogFiles(path) :
 		imgPrefix = path + 'plots/' + netName
 		drawLossPlots( imgPrefix, trnIter, trnLoss, tstIter, tstLoss)
 
-		# Call to draw upsampled loss if it was captured
-		if len(trnUpLoss) > 0 :
-			imgPrefix = imgPrefix + '_up'
-			drawLossPlots( imgPrefix, trnIter, trnUpLoss, tstIter, tstUpLoss)
-		#end if
+		# # Call to draw upsampled loss if it was captured
+		# if len(trnUpLoss) > 0 :
+		# 	imgPrefix = imgPrefix + '_up'
+		# 	drawLossPlots( imgPrefix, trnIter, trnUpLoss, tstIter, tstUpLoss)
+		# #end if
 	#end for
 
 	return

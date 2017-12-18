@@ -1,0 +1,34 @@
+# The train/test net protocol buffer definition
+net: "./depth_big_siamese_train_test.prototxt"
+# test_iter specifies how many forward passes the test should carry out.
+# Train images: 2128, Test images: 236
+
+# number of test iterations
+#	batch 4 * iter 59 = 236
+test_iter: 59
+# how often to run on test data
+test_interval: 100
+# number of train iterations
+#	batch 4 * iter 550 = 2200
+max_iter: 3200
+#max_iter: 700
+snapshot: 600
+snapshot_prefix: "snapshots/depth_big_siamese"
+
+#lr_policy: "inv"
+#gamma: 0.0001
+#power: 0.75
+#base_lr: 0.001
+#momentum: 0.9
+#weight_decay: 0.0005
+
+lr_policy: "step"
+stepsize: 1000
+base_lr: 0.000001
+gamma: 0.1
+momentum: 0.9
+weight_decay: 0.0005
+
+display: 25
+
+solver_mode: GPU
