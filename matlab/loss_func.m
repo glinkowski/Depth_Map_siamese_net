@@ -6,7 +6,7 @@ pd = linspace(0.1, 0.9, 50);    % estimated depth values
 pn = 0.75;     % avg value of neighbors
 pt = 0.5;       % the ground-truth pixel
 
-gamma = .4;    % How much to weight the neighborhood
+gamma = .5;    % How much to weight the neighborhood
 
 epsilon = 0.1;  % ignore difference < epsilon
 
@@ -78,28 +78,34 @@ shiftIm = gtImg + 0.05;
 %eLoss1 = pdist2(noise1, gtImg);
 %eLoss2 = pdist2(noise2, gtImg);
 
-eLoss1 = sqrt(sum(sum( (noise1 - gtImg).^2 )));
-eLoss2 = sqrt(sum(sum( (noise2 - gtImg).^2 )));
-eLoss3 = sqrt(sum(sum( (nullIm - gtImg).^2 )));
-eLoss4 = sqrt(sum(sum( (noise4 - gtImg).^2 )));
-eLoss5 = sqrt(sum(sum( (nullIm2 - gtImg).^2 )));
-eLoss6 = sqrt(sum(sum( (shiftIm - gtImg).^2 )));
+eLoss1 = (sum(sum( (noise1 - gtImg).^2 )));
+eLoss2 = (sum(sum( (noise2 - gtImg).^2 )));
+eLoss3 = (sum(sum( (nullIm - gtImg).^2 )));
+eLoss4 = (sum(sum( (noise4 - gtImg).^2 )));
+eLoss5 = (sum(sum( (nullIm2 - gtImg).^2 )));
+eLoss6 = (sum(sum( (shiftIm - gtImg).^2 )));
 
 H = [0 .25 0; .25 0 .25; 0 .25 0];
 %NOTE: this approach still affects the edges
 % To see this, run: V = ones(3, 3).*0.5; conv2(V, H, 'same')
 nbAv1 = conv2(noise1, H, 'same');
-nLoss1 = sum(sum( (1 - gamma).*(abs(noise1 - gtImg).^2) + (gamma).*(abs(noise1 -  nbAv1).^2) ));
+nLoss1 = sum(sum( (1 - gamma).*((noise1 - gtImg).^2) + (gamma).*((noise1 -  nbAv1).^2) ));
+%nLoss1 = sqrt(nLoss1);
 nbAv2 = conv2(noise2, H, 'same');
-nLoss2 = sum(sum( (1 - gamma).*(abs(noise2 - gtImg).^2) + (gamma).*(abs(noise2 -  nbAv2).^2) ));
+nLoss2 = sum(sum( (1 - gamma).*((noise2 - gtImg).^2) + (gamma).*((noise2 -  nbAv2).^2) ));
+%nLoss2 = sqrt(nLoss2);
 nbAv3 = conv2(nullIm, H, 'same');
-nLoss3 = sum(sum( (1 - gamma).*(abs(nullIm - gtImg).^2) + (gamma).*(abs(nullIm -  nbAv3).^2) ));
+nLoss3 = sum(sum( (1 - gamma).*((nullIm - gtImg).^2) + (gamma).*((nullIm -  nbAv3).^2) ));
+%nLoss3 = sqrt(nLoss3);
 nbAv4 = conv2(noise4, H, 'same');
-nLoss4 = sum(sum( (1 - gamma).*(abs(noise4 - gtImg).^2) + (gamma).*(abs(noise4 -  nbAv4).^2) ));
+nLoss4 = sum(sum( (1 - gamma).*((noise4 - gtImg).^2) + (gamma).*((noise4 -  nbAv4).^2) ));
+%nLoss4 = sqrt(nLoss4);
 nbAv5 = conv2(nullIm2, H, 'same');
-nLoss5 = sum(sum( (1 - gamma).*(abs(nullIm2 - gtImg).^2) + (gamma).*(abs(nullIm2 -  nbAv5).^2) ));
+nLoss5 = sum(sum( (1 - gamma).*((nullIm2 - gtImg).^2) + (gamma).*((nullIm2 -  nbAv5).^2) ));
+%nLoss5 = sqrt(nLoss5);
 nbAv6 = conv2(shiftIm, H, 'same');
-nLoss6 = sum(sum( ((1 - gamma).*(abs(shiftIm - gtImg).^2)) + ((gamma).*(abs(shiftIm -  nbAv6).^2)) ));
+nLoss6 = sum(sum( ((1 - gamma).*((shiftIm - gtImg).^2)) + ((gamma).*((shiftIm -  nbAv6).^2)) ));
+%nLoss6 = sqrt(nLoss6);
 
 tText = sprintf('tests performed : noise 0.5, noise 0, flat 0, noise GT, flat N, shift GT');
 eText = sprintf('Euclidian Losses: %0.5f, %0.5f, %0.5f, %0.5f, %0.5f, %0.5f ', eLoss1, eLoss2, eLoss3, eLoss4, eLoss5, eLoss6);
